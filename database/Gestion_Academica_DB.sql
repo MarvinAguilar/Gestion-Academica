@@ -1,4 +1,4 @@
---drop table estudiantesGrupo;
+8--drop table estudiantesGrupo;
 --drop table cursosCarrera;
 --drop table grupo;
 --drop table profesor;
@@ -784,13 +784,15 @@ begin
 end;
 /
 
-create or replace function listarCursosCarrera
+create or replace function listarCursosCarrera(
+    in_codigoCarrera in cursosCarrera.codigoCarrera%type;
+)
 return types.refCursor
 as
     cursosCarreraCursor types.refCursor;
 begin
     open cursosCarreraCursor for
-        select * from cursosCarrera;
+        select * from cursosCarrera where carrera = in_codigoCarrera;
     return cursosCarreraCursor;
 end;
 /
@@ -868,26 +870,34 @@ end;
 --FUNCIONES - TABLA ESTUDIANTESGRUPO
 
 create or replace function buscarEstudianteGrupo(
-    in_cedulaEstudiante in estudiantesGrupo.cedulaEstudiante%type, 
-    in_codigoGrupo in estudiantesGrupo.codigoGrupo%type
+    cedulaEstudiante in estudiantesGrupo.cedulaEstudiante%type, 
+    codigoGrupo in estudiantesGrupo.codigoGrupo%type,
+    codigoCurso in estudiantesGrupo.codigoCurso%type,
+    annoCiclo in estudiantesGrupo.annoCiclo%type, 
+    numeroCiclo in estudiantesGrupo.numeroCiclo%type,
 )
 return types.refCursor
 as 
     estudianteGrupoCursor types.refCursor;
 begin 
     open estudianteGrupoCursor for
-        select * from estudiantesGrupo where cedulaEstudiante = in_cedulaEstudiante and codigoGrupo = in_codigoGrupo;
+        select * from estudiantesGrupo where cedulaEstudiante = in_cedulaEstudiante and codigoGrupo = in_codigoGrupo and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
     return estudianteGrupoCursor;
 end;
 /
 
-create or replace function listarEstudianteGrupo
+create or replace function listarEstudianteGrupo(
+    codigoGrupo in estudiantesGrupo.codigoGrupo%type,
+    codigoCurso in estudiantesGrupo.codigoCurso%type,
+    annoCiclo in estudiantesGrupo.annoCiclo%type, 
+    numeroCiclo in estudiantesGrupo.numeroCiclo%type,
+)
 return types.refCursor
 as
     estudianteGrupoCursor types.refCursor;
 begin
     open estudianteGrupoCursor for
-        select * from estudiantesGrupo;
+        select * from estudiantesGrupo where codigoGrupo = in_codigoGrupo and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;;
     return estudianteGrupoCursor;
 end;
 /

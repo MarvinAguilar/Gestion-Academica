@@ -6,20 +6,23 @@ public class Grupo implements Serializable {
 
     private int numero;
     private String horario;
-    private Profesor profesor;
-    private Curso curso;
-    private Ciclo ciclo;
+    private String profesor;
+    private String curso;
+    private int numeroCiclo;
+    private int annoCiclo;
 
-    public Grupo(int numero, String horario, Profesor profesor, Curso curso, Ciclo ciclo) {
+    public Grupo(int numero, String horario, String profesor, String curso, int numeroCiclo, int annoCiclo) {
         this.setNumero(numero);
         this.setHorario(horario);
         this.setProfesor(profesor);
         this.setCurso(curso);
-        this.setCiclo(ciclo);
+        this.setNumeroCiclo(numeroCiclo);
+        this.setAnnoCiclo(annoCiclo);
     }
 
     public Grupo() {
     }
+
 
     public int getNumero() {
         return numero;
@@ -37,28 +40,36 @@ public class Grupo implements Serializable {
         this.horario = horario;
     }
 
-    public Profesor getProfesor() {
+    public String getProfesor() {
         return profesor;
     }
 
-    public void setProfesor(Profesor profesor) {
+    public void setProfesor(String profesor) {
         this.profesor = profesor;
     }
 
-    public Curso getCurso() {
+    public String getCurso() {
         return curso;
     }
 
-    public void setCurso(Curso curso) {
+    public void setCurso(String curso) {
         this.curso = curso;
     }
 
-    public Ciclo getCiclo() {
-        return ciclo;
+    public int getNumeroCiclo() {
+        return numeroCiclo;
     }
 
-    public void setCiclo(Ciclo ciclo) {
-        this.ciclo = ciclo;
+    public void setNumeroCiclo(int numeroCiclo) {
+        this.numeroCiclo = numeroCiclo;
+    }
+
+    public int getAnnoCiclo() {
+        return annoCiclo;
+    }
+
+    public void setAnnoCiclo(int annoCiclo) {
+        this.annoCiclo = annoCiclo;
     }
 
     @Override
@@ -66,9 +77,10 @@ public class Grupo implements Serializable {
         return "Grupo{" +
                 "numero=" + numero +
                 ", horario='" + horario + '\'' +
-                ", profesor=" + profesor +
-                ", curso=" + curso +
-                ", ciclo=" + ciclo +
+                ", profesor='" + profesor + '\'' +
+                ", curso='" + curso + '\'' +
+                ", numeroCiclo=" + numeroCiclo +
+                ", annoCiclo=" + annoCiclo +
                 '}';
     }
 }

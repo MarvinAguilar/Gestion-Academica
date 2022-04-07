@@ -67,8 +67,8 @@ public class application {
 //             System.out.println(perfil);
 //         }
 
-//        CarreraDAO c = CarreraDAO.getInstance();
-//        c.insertarCarrera(new Carrera("EF00", "Administración", "BACHI"));
+//        CarreraDAO ca = CarreraDAO.getInstance();
+//        ca.insertarCarrera(new Carrera("EF00", "Administración", "BACHI"));
 //        c.modificarCarrera(new Carrera("EF00", "Administración de Empresas", "BACHILLERATO"));
 
 //        c.eliminarCarrera("EF00");
@@ -94,8 +94,9 @@ public class application {
 //             System.out.println(usuario);
 //         }
 
-//        CursoDAO c = CursoDAO.getInstance();
-//        c.insertarCurso(new Curso("AAA", "progra 3", 4, 2));
+//        CursoDAO cu = CursoDAO.getInstance();
+//        cu.insertarCurso(new Curso("EF08", "Admin 1", 4, 2));
+//        cu.insertarCurso(new Curso("EF06", "Conta 1", 4, 2));
 
 //        c.modificarCurso(new Curso("AAA", "progra 3", 4, 2));
 
@@ -104,9 +105,38 @@ public class application {
 //        System.out.println(c.buscarCurso("AAA"));
 
 //        List<Curso> cursos = c.listarCurso();
+ //       for (Curso curso : cursos) {
+//            System.out.println(curso);
+//        }
+
+//        CursosCarreraDAO c = CursosCarreraDAO.getInstance();
+//        c.insertarCursoCarrera("EF00", "EF08", 2022, 1);
+//       c.insertarCursoCarrera("EF00", "EF06", 2022, 1);
+
+//        c.modificarCurso(new Curso("AAA", "progra 3", 4, 2));
+
+//        c.eliminarCurso("AAA");
+
+//        System.out.println(c.buscarCurso("AAA"));
+
+//        List<Curso> cursos = c.listarCurso("EF00");
 //        for (Curso curso : cursos) {
 //            System.out.println(curso);
 //        }
+
+        EstudianteGrupoDAO estg = EstudianteGrupoDAO.getInstance();
+//        estg.insertarEstudianteGrupo("117520958", "1", "200", 2022, 1, (float) 0);
+
+//        c.modificarCurso(new Curso("AAA", "progra 3", 4, 2));
+
+//        c.eliminarCurso("AAA");
+
+//        System.out.println(c.buscarCurso("AAA"));
+
+        List<Alumno> alumnos = estg.listarEstudianteGrupo("1", "200", 2022, 1);
+        for (Alumno alumno : alumnos) {
+            System.out.println(alumno);
+        }
 
         // QUEDA PENDIENTE PROBAR CICLO
     }
