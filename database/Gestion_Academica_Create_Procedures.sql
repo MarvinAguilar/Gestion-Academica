@@ -1,0 +1,621 @@
+create or replace package types
+as
+    type refCursor is ref cursor;
+end;
+/
+
+--==================PROCEDIMIENTOS ALMACENADOS - TABLA CARRERA==================
+--INSERT
+create or replace procedure spInsertarCarrera(
+    in_codigo in carrera.codigo%type, 
+    in_nombre in carrera.nombre%type, 
+    in_titulo in carrera.titulo%type
+)
+as
+begin
+    insert into carrera values(in_codigo, in_nombre, in_titulo);
+end;
+/
+--UPDATE
+create or replace procedure spModificarCarrera(
+    in_codigo in carrera.codigo%type, 
+    in_nombre in carrera.nombre%type, 
+    in_titulo in carrera.titulo%type
+)
+as
+begin
+    update carrera set nombre = in_nombre, titulo = in_titulo 
+        where codigo = in_codigo;
+end;
+/
+--DELETE
+create or replace procedure spEliminarCarrera(
+    in_codigo in carrera.codigo%type 
+)
+as
+begin
+    delete from carrera where codigo = in_codigo;
+end;
+/
+--FUNCIONES - TABLA CARRERA
+create or replace function buscarCarrera(
+    in_codigo in carrera.codigo%type
+)
+return types.refCursor
+as 
+    carreraCursor types.refCursor;
+begin 
+    open carreraCursor for
+        select * from carrera where codigo = in_codigo;
+    return carreraCursor;
+end;
+/
+create or replace function listarCarrera
+return types.refCursor
+as
+    carreraCursor types.refCursor;
+begin
+    open carreraCursor for
+        select * from carrera;
+    return carreraCursor;
+end;
+/
+
+
+--==================PROCEDIMIENTOS ALMACENADOS - TABLA CURSO==================
+--INSERT
+create or replace procedure spInsertarCurso(
+    in_codigo in curso.codigo%type, 
+    in_nombre in curso.nombre%type, 
+    in_creditos in curso.creditos%type,
+    in_horasSemanales in curso.horasSemanales%type
+)
+as
+begin
+    insert into curso values(in_codigo, in_nombre, in_creditos, in_horasSemanales);
+end;
+/
+--UPDATE
+create or replace procedure spModificarCurso(
+    in_codigo in curso.codigo%type,
+    in_nombre in curso.nombre%type,
+    in_creditos in curso.creditos%type,
+    in_horasSemanales in curso.horasSemanales%type
+)
+as
+begin
+    update curso set nombre = in_nombre, creditos = in_creditos, horasSemanales = in_horasSemanales
+        where codigo = in_codigo;
+end;
+/
+--DELETE
+create or replace procedure spEliminarCurso(
+    in_codigo in curso.codigo%type 
+)
+as
+begin
+    delete from curso where codigo = in_codigo;
+end;
+/
+--FUNCIONES - TABLA CURSO
+create or replace function buscarCurso(
+    in_codigo in curso.codigo%type
+)
+return types.refCursor
+as 
+    cursoCursor types.refCursor;
+begin 
+    open cursoCursor for
+        select * from curso where codigo = in_codigo;
+    return cursoCursor;
+end;
+/
+create or replace function listarCurso
+return types.refCursor
+as
+    cursoCursor types.refCursor;
+begin
+    open cursoCursor for
+        select * from curso;
+    return cursoCursor;
+end;
+/
+
+
+--=================PROCEDIMIENTOS ALMACENADOS - TABLA PROFESOR=================
+--INSERT
+create or replace procedure spInsertarProfesor(
+    in_cedula in profesor.cedula%type, 
+    in_nombre in profesor.nombre%type, 
+    in_telefono in profesor.telefono%type,
+    in_email in profesor.email%type
+)
+as
+begin
+    insert into profesor values(in_cedula, in_nombre, in_telefono, in_email);
+end;
+/
+--UPDATE
+create or replace procedure spModificarProfesor(
+    in_cedula in profesor.cedula%type,
+    in_nombre in profesor.nombre%type,
+    in_telefono in profesor.telefono%type,
+    in_email in profesor.email%type
+)
+as
+begin
+    update profesor set nombre = in_nombre, telefono = in_telefono, email = in_email
+        where cedula = in_cedula;
+end;
+/
+--DELETE
+create or replace procedure spEliminarProfesor(
+    in_cedula in profesor.cedula%type 
+)
+as
+begin
+    delete from profesor where cedula = in_cedula;
+end;
+/
+--FUNCIONES - TABLA PROFESOR
+create or replace function buscarProfesor(
+	in_cedula in profesor.cedula%type
+)
+return types.refCursor
+as
+    profesorCursor types.refCursor;
+begin
+    open profesorCursor for
+        select * from profesor where cedula = in_cedula;
+    return profesorCursor;
+end;
+/
+create or replace function listarProfesor
+return types.refCursor
+as
+    profesorCursor types.refCursor;
+begin
+    open profesorCursor for
+        select * from profesor;
+    return profesorCursor;
+end;
+/
+
+
+--=================PROCEDIMIENTOS ALMACENADOS - TABLA ALUMNO=================
+--INSERT
+create or replace procedure spInsertarAlumno(
+    in_cedula in alumno.cedula%type, 
+    in_nombre in alumno.nombre%type, 
+    in_telefono in alumno.telefono%type,
+    in_email in alumno.email%type,
+    in_fechaNacimiento in alumno.fechaNacimiento%type,
+    in_carrera in alumno.carrera%type
+)
+as
+begin
+    insert into alumno values(in_cedula, in_nombre, in_telefono, in_email, in_fechaNacimiento, in_carrera);
+end;
+/
+--UPDATE
+create or replace procedure spModificarAlumno(
+    in_cedula in alumno.cedula%type, 
+    in_nombre in alumno.nombre%type, 
+    in_telefono in alumno.telefono%type,
+    in_email in alumno.email%type,
+    in_fechaNacimiento in alumno.fechaNacimiento%type,
+    in_carrera in alumno.carrera%type
+)
+as
+begin
+    update alumno set nombre = in_nombre, telefono = in_telefono, email = in_email, carrera = in_carrera, fechaNacimiento = in_fechaNacimiento
+        where cedula = in_cedula;
+end;
+/
+--DELETE
+create or replace procedure spEliminarAlumno(
+    in_cedula in alumno.cedula%type 
+)
+as
+begin
+    delete from alumno where cedula = in_cedula;
+end;
+/
+
+--FUNCIONES - TABLA ALUMNO
+create or replace function buscarAlumno(
+    in_cedula in alumno.cedula%type
+)
+return types.refCursor
+as 
+    alumnoCursor types.refCursor;
+begin 
+    open alumnoCursor for
+        select * from alumno where cedula = in_cedula;
+    return alumnoCursor;
+end;
+/
+create or replace function listarAlumno
+return types.refCursor
+as
+    alumnoCursor types.refCursor;
+begin
+    open alumnoCursor for
+        select * from alumno;
+    return alumnoCursor;
+end;
+/
+
+
+--=================PROCEDIMIENTOS ALMACENADOS - TABLA CICLO=================
+--INSERT
+create or replace procedure spInsertarCiclo(
+    in_anno in ciclo.anno%type, 
+    in_numero in ciclo.numero%type, 
+    in_fechaInicio in ciclo.fechaInicio%type,
+    in_fechaFinal in ciclo.fechaFinal%type,
+    in_estado in ciclo.estado%type
+)
+as
+begin
+    insert into ciclo values(in_anno, in_numero, in_fechaInicio, in_fechaFinal, in_estado);
+end;
+/
+--UPDATE
+create or replace procedure spModificarCiclo(
+    in_anno in ciclo.anno%type, 
+    in_numero in ciclo.numero%type, 
+    in_fechaInicio in ciclo.fechaInicio%type,
+    in_fechaFinal in ciclo.fechaFinal%type,
+    in_estado in ciclo.estado%type
+)
+as
+begin
+    update ciclo set fechaInicio = in_fechaInicio, fechaFinal = in_fechaFinal, estado = in_estado
+        where anno = in_anno and numero = in_numero;
+end;
+/
+--DELETE
+create or replace procedure spEliminarCiclo(
+    in_anno in ciclo.anno%type,
+    in_numero in ciclo.numero%type
+)
+as
+begin
+    delete from ciclo where anno = in_anno and numero = in_numero;
+end;
+/
+--FUNCIONES - TABLA CICLO
+create or replace function buscarCiclo(
+    in_anno in ciclo.anno%type,
+    in_numero in ciclo.numero%type
+)
+return types.refCursor
+as 
+    cicloCursor types.refCursor;
+begin 
+    open cicloCursor for
+        select * from ciclo where anno = in_anno and numero = in_numero;
+    return cicloCursor;
+end;
+/
+create or replace function listarCiclo
+return types.refCursor
+as
+    cicloCursor types.refCursor;
+begin
+    open cicloCursor for
+        select * from ciclo;
+    return cicloCursor;
+end;
+/
+
+
+--=================PROCEDIMIENTOS ALMACENADOS - TABLA GRUPO=================
+--INSERT
+create or replace procedure spInsertarGrupo(
+    in_numero in grupo.numero%type, 
+    in_horario in grupo.horario%type, 
+    in_cedulaProfesor in grupo.cedulaProfesor%type,
+    in_codigoCurso in grupo.codigoCurso%type,
+    in_annoCiclo in grupo.annoCiclo%type,
+    in_numeroCiclo in grupo.numeroCiclo%type
+)
+as
+begin
+    insert into grupo values(in_numero, in_horario, in_cedulaProfesor, in_codigoCurso, in_annoCiclo, in_numeroCiclo);
+end;
+/
+--UPDATE
+create or replace procedure spModificarGrupo(
+    in_numero in grupo.numero%type, 
+    in_horario in grupo.horario%type, 
+    in_cedulaProfesor in grupo.cedulaProfesor%type,
+    in_codigoCurso in grupo.codigoCurso%type,
+    in_annoCiclo in grupo.annoCiclo%type,
+    in_numeroCiclo in grupo.numeroCiclo%type
+)
+as
+begin
+    update grupo set horario = in_horario, cedulaProfesor = in_cedulaProfesor
+        where codigoCurso = in_codigoCurso and numero = in_numero and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+end;
+/
+--DELETE
+create or replace procedure spEliminarGrupo(
+    in_numero in grupo.numero%type, 
+    in_codigoCurso in grupo.codigoCurso%type,
+    in_annoCiclo in grupo.annoCiclo%type,
+    in_numeroCiclo in grupo.numeroCiclo%type
+)
+as
+begin
+    delete from grupo where codigoCurso = in_codigoCurso and numero = in_numero and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+end;
+/
+--FUNCIONES - TABLA GRUPO
+create or replace function buscarGrupo(
+    in_numero in grupo.numero%type,
+    in_cedulaProfesor in grupo.cedulaProfesor%type,
+    in_codigoCurso in grupo.codigoCurso%type,
+    in_annoCiclo in grupo.annoCiclo%type,
+    in_numeroCiclo in grupo.numeroCiclo%type
+)
+return types.refCursor
+as 
+    grupoCursor types.refCursor;
+begin 
+    open grupoCursor for
+        select * from grupo where numero = in_numero and cedulaProfesor = in_cedulaProfesor and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+    return grupoCursor;
+end;
+/
+create or replace function listarGrupo
+return types.refCursor
+as
+    grupoCursor types.refCursor;
+begin
+    open grupoCursor for
+        select * from grupo;
+    return grupoCursor;
+end;
+/
+
+
+--=================PROCEDIMIENTOS ALMACENADOS - TABLA PERFIL=================
+--INSERT
+create or replace procedure spInsertarPerfil(
+    in_id in perfil.id%type, 
+    in_nombre in perfil.nombre%type
+)
+as
+begin
+    insert into perfil values(in_id, in_nombre);
+end;
+/
+--UPDATE
+create or replace procedure spModificarPerfil(
+    in_id in grupo.numero%type, 
+    in_nombre in grupo.horario%type
+)
+as
+begin
+    update perfil set nombre = in_nombre
+        where id = in_id;
+end;
+/
+--DELETE
+create or replace procedure spEliminarPerfil(
+    in_id in grupo.numero%type
+)
+as
+begin
+    delete from perfil where id = in_id;
+end;
+/
+--FUNCIONES - TABLA PERFIL
+create or replace function buscarPerfil(
+    in_id in grupo.numero%type
+)
+return types.refCursor
+as 
+    perfilCursor types.refCursor;
+begin 
+    open perfilCursor for
+        select * from perfil where id = in_id;
+    return perfilCursor;
+end;
+/
+create or replace function listarPerfil
+return types.refCursor
+as
+    perfilCursor types.refCursor;
+begin
+    open perfilCursor for
+        select * from perfil;
+    return perfilCursor;
+end;
+/
+
+
+--=================PROCEDIMIENTOS ALMACENADOS - TABLA USUARIO=================
+--INSERT
+create or replace procedure spInsertarUsuario(
+    in_cedula in usuario.cedula%type, 
+    in_clave in usuario.clave%type,
+    in_perfil in usuario.perfil%type
+)
+as
+begin
+    insert into usuario values(in_cedula, in_clave, in_perfil);
+end;
+/
+--UPDATE
+create or replace procedure spModificarUsuario(
+    in_cedula in usuario.cedula%type, 
+    in_clave in usuario.clave%type,
+    in_perfil in usuario.perfil%type
+)
+as
+begin
+    update usuario set clave = in_clave, perfil = in_perfil
+        where cedula = in_cedula;
+end;
+/
+--DELETE
+create or replace procedure spEliminarUsuario(
+    in_cedula in usuario.cedula%type
+)
+as
+begin
+    delete from usuario where cedula = in_cedula;
+end;
+/
+--FUNCIONES - TABLA USUARIO
+create or replace function buscarUsuario(
+    in_cedula in usuario.cedula%type
+)
+return types.refCursor
+as 
+    usuarioCursor types.refCursor;
+begin 
+    open usuarioCursor for
+        select * from usuario where cedula = in_cedula;
+    return usuarioCursor;
+end;
+/
+create or replace function listarUsuario
+return types.refCursor
+as
+    usuarioCursor types.refCursor;
+begin
+    open usuarioCursor for
+        select * from usuario;
+    return usuarioCursor;
+end;
+/
+
+
+--===============PROCEDIMIENTOS ALMACENADOS - TABLA CURSOSCARRERA===============
+--INSERT
+create or replace procedure spInsertarCursosCarrera(
+    in_codigoCarrera in cursosCarrera.codigoCarrera%type, 
+    in_codigoCurso in cursosCarrera.codigoCurso%type,
+    in_annoCiclo in cursosCarrera.annoCiclo%type,
+    in_numeroCiclo in cursosCarrera.numeroCiclo%type
+)
+as
+begin
+    insert into cursosCarrera values(in_codigoCarrera, in_codigoCurso, in_annoCiclo, in_numeroCiclo);
+end;
+/
+--DELETE
+create or replace procedure spEliminarCursosCarrera(
+    in_codigoCarrera in cursosCarrera.codigoCarrera%type, 
+    in_codigoCurso in cursosCarrera.codigoCurso%type,
+    in_annoCiclo in cursosCarrera.annoCiclo%type,
+    in_numeroCiclo in cursosCarrera.numeroCiclo%type
+)
+as
+begin
+    delete from cursosCarrera where codigoCarrera = in_codigoCarrera and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+end;
+/
+create or replace function buscarCursosCarrera(
+    in_codigoCarrera in cursosCarrera.codigoCarrera%type, 
+    in_codigoCurso in cursosCarrera.codigoCurso%type,
+    in_annoCiclo in cursosCarrera.annoCiclo%type,
+    in_numeroCiclo in cursosCarrera.numeroCiclo%type
+)
+return types.refCursor
+as 
+    cursosCarreraCursor types.refCursor;
+begin 
+    open cursosCarreraCursor for
+        select * from cursosCarrera where codigoCarrera = in_codigoCarrera and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+    return cursosCarreraCursor;
+end;
+/
+create or replace function listarCursosCarrera(
+    in_codigoCarrera in cursosCarrera.codigoCarrera%type
+)
+return types.refCursor
+as
+    cursosCarreraCursor types.refCursor;
+begin
+    open cursosCarreraCursor for
+        select * from cursosCarrera where codigoCarrera = in_codigoCarrera;
+    return cursosCarreraCursor;
+end;
+/
+
+
+--=============PROCEDIMIENTOS ALMACENADOS - TABLA ESTUDIANTESGRUPO=============
+--INSERT
+create or replace procedure spMatriculaEstudiante(
+    in_cedulaEstudiante in estudiantesGrupo.cedulaEstudiante%type, 
+    in_numeroGrupo in estudiantesGrupo.numeroGrupo%type,
+    in_codigoCurso in estudiantesGrupo.codigoCurso%type,
+    in_annoCiclo in estudiantesGrupo.annoCiclo%type, 
+    in_numeroCiclo in estudiantesGrupo.numeroCiclo%type,
+    in_nota in estudiantesGrupo.nota%type
+)
+as
+begin
+    insert into estudiantesGrupo values(in_cedulaEstudiante, in_numeroGrupo, in_codigoCurso, in_annoCiclo, in_numeroCiclo, in_nota);
+end;
+/
+--UPDATE
+create or replace procedure spIngresaNota(
+    in_cedulaEstudiante in estudiantesGrupo.cedulaEstudiante%type, 
+    in_numeroGrupo in estudiantesGrupo.numeroGrupo%type,
+    in_codigoCurso in estudiantesGrupo.codigoCurso%type,
+    in_annoCiclo in estudiantesGrupo.annoCiclo%type, 
+    in_numeroCiclo in estudiantesGrupo.numeroCiclo%type,
+    in_nota in estudiantesGrupo.nota%type
+)
+as
+begin
+    update estudiantesGrupo set nota = in_nota
+        where cedulaEstudiante = in_cedulaEstudiante and numeroGrupo = in_numeroGrupo and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+end;
+/
+--DELETE
+create or replace procedure spDesmatriculaEstudiante(
+    in_cedulaEstudiante in estudiantesGrupo.cedulaEstudiante%type, 
+    in_numeroGrupo in estudiantesGrupo.numeroGrupo%type,
+	in_codigoCurso in estudiantesGrupo.codigoCurso%type
+)
+as
+begin
+    delete from estudiantesGrupo where cedulaEstudiante = in_cedulaEstudiante and numeroGrupo = in_numeroGrupo and codigoCurso = in_codigoCurso;
+end;
+/
+--FUNCIONES - TABLA ESTUDIANTESGRUPO
+create or replace function buscarGruposEstudiante(
+    in_cedulaEstudiante in estudiantesGrupo.cedulaEstudiante%type
+)
+return types.refCursor
+as 
+    estudianteGrupoCursor types.refCursor;
+begin 
+    open estudianteGrupoCursor for
+        select * from estudiantesGrupo where cedulaEstudiante = in_cedulaEstudiante;
+    return estudianteGrupoCursor;
+end;
+/
+create or replace function listarEstudiantesGrupo(
+    in_numeroGrupo in estudiantesGrupo.numeroGrupo%type,
+    in_codigoCurso in estudiantesGrupo.codigoCurso%type,
+    in_annoCiclo in estudiantesGrupo.annoCiclo%type, 
+    in_numeroCiclo in estudiantesGrupo.numeroCiclo%type
+)
+return types.refCursor
+as
+    estudianteGrupoCursor types.refCursor;
+begin
+    open estudianteGrupoCursor for
+        select * from estudiantesGrupo where numeroGrupo = in_numeroGrupo and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+    return estudianteGrupoCursor;
+end;
+/

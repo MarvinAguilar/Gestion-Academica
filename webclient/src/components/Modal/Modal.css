@@ -1,0 +1,47 @@
+body.active-modal {
+  overflow-y: hidden;
+}
+
+.custom-modal,
+.overlay {
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  position: fixed;
+}
+
+.overlay {
+  background: rgba(49, 49, 49, 0.8);
+}
+
+.custom-modal__content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 600px;
+  min-width: 450px;
+}
+
+.custom-modal__content-body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.custom-modal__content-body::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+.custom-modal__content-body::-webkit-scrollbar-track {
+  background: #f7f7f7;
+}
+
+.custom-modal__content-body::-webkit-scrollbar-thumb {
+  background: #8b8b8b;
+  border-radius: 100vh;
+  -webkit-border-radius: 100vh;
+  -moz-border-radius: 100vh;
+  -ms-border-radius: 100vh;
+  -o-border-radius: 100vh;
+}
