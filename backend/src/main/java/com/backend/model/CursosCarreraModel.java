@@ -1,11 +1,10 @@
 package com.backend.model;
 
-import com.backend.datamodel.data.CursosCarreraDAO;
+import com.backend.services.CursosCarreraDAO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class CursosCarreraModel {
-
     private static CursosCarreraModel instance = null;
     private final CursosCarreraDAO dao;
 
@@ -13,10 +12,8 @@ public class CursosCarreraModel {
         this.dao = CursosCarreraDAO.getInstance();
     }
 
-    public static CursosCarreraModel getInstance(){
-        if (instance == null){
-            instance = new CursosCarreraModel();
-        }
+    public static CursosCarreraModel getInstance() {
+        if (instance == null) instance = new CursosCarreraModel();
         return instance;
     }
 
@@ -39,5 +36,5 @@ public class CursosCarreraModel {
     //public void eliminarCursosCarrera(int numero, String codigoCurso, int annoCiclo, int numeroCiclo){
     //    this.dao.eliminarCursosCarrera(numero, codigoCurso, annoCiclo, numeroCiclo);
     //}
-    
+
 }

@@ -1,6 +1,6 @@
 package com.backend.controller;
 
-import com.backend.model.data.EstudianteGrupoDAO;
+import com.backend.services.EstudianteGrupoDAO;
 import org.json.Cookie;
 import org.json.JSONObject;
 

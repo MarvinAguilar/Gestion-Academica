@@ -1,12 +1,10 @@
 package com.backend.model;
 
-import com.backend.datamodel.data.CarreraDAO;
-import com.backend.datamodel.entity.Carrera;
+import com.backend.services.CarreraDAO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class CarreraModel {
-
     private static CarreraModel instance = null;
     private final CarreraDAO dao;
 
@@ -14,31 +12,28 @@ public class CarreraModel {
         this.dao = CarreraDAO.getInstance();
     }
 
-    public static CarreraModel getInstance(){
-        if (instance == null){
-            instance = new CarreraModel();
-        }
+    public static CarreraModel getInstance() {
+        if (instance == null) instance = new CarreraModel();
         return instance;
     }
 
-    public JSONArray listarCarrera(){
+    public JSONArray listarCarrera() {
         return this.dao.listarCarrera();
     }
 
-    public JSONObject buscarCarrera(String codigo){
+    public JSONObject buscarCarrera(String codigo) {
         return this.dao.buscarCarrera(codigo);
     }
 
-    public void insertarCarrera(String codigo, String nombre, String titulo){
+    public void insertarCarrera(String codigo, String nombre, String titulo) {
         this.dao.insertarCarrera(codigo, nombre, titulo);
     }
 
-    public void modificarCarrera(String codigo, String nombre, String titulo){
+    public void modificarCarrera(String codigo, String nombre, String titulo) {
         this.dao.modificarCarrera(codigo, nombre, titulo);
     }
 
-    public void eliminarCarrera(String codigo){
+    public void eliminarCarrera(String codigo) {
         this.dao.eliminarCarrera(codigo);
     }
-
 }

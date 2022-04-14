@@ -1,11 +1,10 @@
 package com.backend.model;
 
-import com.backend.datamodel.data.EstudianteGrupoDAO;
+import com.backend.services.EstudianteGrupoDAO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class EstudianteGrupoModel {
-
     private static EstudianteGrupoModel instance = null;
     private final EstudianteGrupoDAO dao;
 
@@ -13,14 +12,12 @@ public class EstudianteGrupoModel {
         this.dao = EstudianteGrupoDAO.getInstance();
     }
 
-    public static EstudianteGrupoModel getInstance(){
-        if (instance == null){
-            instance = new EstudianteGrupoModel();
-        }
+    public static EstudianteGrupoModel getInstance() {
+        if (instance == null) instance = new EstudianteGrupoModel();
         return instance;
     }
 
-    public JSONObject listarEstudiantesGrupo(int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo){
+    public JSONObject listarEstudiantesGrupo(int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo) {
         return this.dao.listarEstudiantesGrupo(numeroGrupo, codigoCurso, annoCiclo, numeroCiclo);
     }
 
@@ -39,5 +36,5 @@ public class EstudianteGrupoModel {
 //    public void eliminarEstudianteGrupo(String codigo){
 //        this.dao.eliminarEstudianteGrupo(codigo);
 //    }
-    
+
 }
