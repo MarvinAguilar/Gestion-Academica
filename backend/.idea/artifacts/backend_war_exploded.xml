@@ -15,6 +15,7 @@
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="Maven: org.json:json:20220320" />
+          <element id="library" level="project" name="Maven: org.javatuples:javatuples:1.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">

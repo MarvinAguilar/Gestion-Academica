@@ -4,6 +4,8 @@ import com.backend.services.EstudianteGrupoDAO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.sql.SQLException;
+
 public class EstudianteGrupoModel {
     private static EstudianteGrupoModel instance = null;
     private final EstudianteGrupoDAO dao;
@@ -17,24 +19,23 @@ public class EstudianteGrupoModel {
         return instance;
     }
 
-    public JSONObject listarEstudiantesGrupo(int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo) {
+    public JSONObject listarEstudiantesGrupo(int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo) throws SQLException {
         return this.dao.listarEstudiantesGrupo(numeroGrupo, codigoCurso, annoCiclo, numeroCiclo);
     }
 
-//   public JSONObject buscarEstudianteGrupo(String codigo){
-//        return this.dao.buscarEstudianteGrupo(codigo);
-//    }
+    public JSONObject buscarGruposEstudiante(String cedulaEstudiante) throws SQLException {
+        return this.dao.buscarGruposEstudiante(cedulaEstudiante);
+    }
 
-//    public void insertarEstudianteGrupo(String codigo, String nombre, int creditos, int horasSemanales){
-//        this.dao.insertarEstudianteGrupo(codigo, nombre, creditos, horasSemanales);
-//    }
+    public void matriculaEstudiante(String cedulaEstudiante, int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo) throws SQLException {
+        this.dao.matriculaEstudiante(cedulaEstudiante, numeroGrupo, codigoCurso, annoCiclo, numeroCiclo);
+    }
 
-//    public void modificarEstudianteGrupo(String codigo, String nombre, int creditos, int horasSemanales){
-//        this.dao.modificarEstudianteGrupo(codigo, nombre, creditos, horasSemanales);
-//    }
+    public void ingresaNota(String cedulaEstudiante, int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo, Float nota) throws SQLException {
+        this.dao.ingresaNota(cedulaEstudiante, numeroGrupo, codigoCurso, annoCiclo, numeroCiclo, nota);
+    }
 
-//    public void eliminarEstudianteGrupo(String codigo){
-//        this.dao.eliminarEstudianteGrupo(codigo);
-//    }
-
+    public void desmatriculaEstudiante(String cedulaEstudiante, int numeroGrupo, String codigoCurso) throws SQLException {
+        this.dao.desmatriculaEstudiante(cedulaEstudiante, numeroGrupo, codigoCurso);
+    }
 }

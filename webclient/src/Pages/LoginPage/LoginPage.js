@@ -7,7 +7,7 @@ function LoginPage() {
     <>
       <div
         className="d-flex flex-column justify-content-center align-items-center"
-        style={{ height: "100vh" }}
+        style={{ height: "100vh", background: "#0568a7" }}
       >
         <div className="row">
           <div className="col">
@@ -20,7 +20,7 @@ function LoginPage() {
                   style={{ width: "32px", height: "32px" }}
                 />
                 <h1
-                  className="login-title display-6 fw-bold text-secondary"
+                  className="login-title display-6 fw-bold text-light"
                   style={{ fontSize: "1.8rem" }}
                 >
                   Sistema de Gestión Académica

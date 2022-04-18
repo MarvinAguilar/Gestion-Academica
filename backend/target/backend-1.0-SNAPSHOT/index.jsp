@@ -6,22 +6,46 @@
 
     <script>
         addEventListener("load", () => {
-            let urlWS = "ws://localhost:8081/gestion-academica/mensaje";
+            let urlWS = "ws://localhost:8081/gestion-academica/carreras";
             let miWebsocket = new WebSocket(urlWS);
-            console.log(miWebsocket);
 
-            miWebsocket.onopen = (e) => {
-                console.log("abierto");
-                miWebsocket.send("Hola soy el cliente");
+            let carrera1 = {
+                request: "PUT",
+                codigo: "ADM",
+                nombre: "Administración vieja confiable 666",
+                titulo: "Licenciatura"
             }
 
-            miWebsocket.onmessage = (e) => {
-                console.log(e.data);
+            let carrera2 = {
+                request: "POST",
+                codigo: "VET",
+                nombre: "Veterinaria",
+                titulo: "Licenciatura"
+            }
+
+            let obtenerCarreras = {
+                request: "GET_ALL"
+            }
+
+            let buscarCarrera = {
+                request: "DELETE",
+                codigo: "ADM"
+            }
+
+            miWebsocket.onopen = (e) => {
+                miWebsocket.send(JSON.stringify(buscarCarrera));
+            }
+
+            let contenedor = document.getElementById("contenedor");
+
+            miWebsocket.onmessage = ({data}) => {
+                console.log(data);
+                contenedor.innerHTML = data;
             }
         })
     </script>
 </head>
 <body>
-<h1><%= "Hello World!" %></h1>
+<div id="contenedor"></div>
 </body>
 </html>

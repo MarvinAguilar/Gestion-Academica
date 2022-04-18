@@ -4,6 +4,8 @@ import com.backend.services.ProfesorDAO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.sql.SQLException;
+
 public class ProfesorModel {
     private static ProfesorModel instance = null;
     private final ProfesorDAO dao;
@@ -17,23 +19,23 @@ public class ProfesorModel {
         return instance;
     }
 
-    public JSONArray listarProfesor() {
+    public JSONArray listarProfesor() throws SQLException {
         return this.dao.listarProfesor();
     }
 
-    public JSONObject buscarProfesor(String cedula) {
+    public JSONObject buscarProfesor(String cedula) throws SQLException {
         return this.dao.buscarProfesor(cedula);
     }
 
-    public void insertarProfesor(String cedula, String nombre, String telefono, String email) {
+    public void insertarProfesor(String cedula, String nombre, String telefono, String email) throws SQLException {
         this.dao.insertarProfesor(cedula, nombre, telefono, email);
     }
 
-    public void modificarProfesor(String cedula, String nombre, String telefono, String email) {
+    public void modificarProfesor(String cedula, String nombre, String telefono, String email) throws SQLException {
         this.dao.modificarProfesor(cedula, nombre, telefono, email);
     }
 
-    public void eliminarProfesor(String cedula) {
+    public void eliminarProfesor(String cedula) throws SQLException {
         this.dao.eliminarProfesor(cedula);
     }
 }

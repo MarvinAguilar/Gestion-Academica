@@ -18,129 +18,76 @@ public class CarreraDAO {
         return instance;
     }
 
-    public void insertarCarrera(String codigo, String nombre, String titulo) {
-        CallableStatement stmt = null;
-
-        try {
-            connection.setAutoCommit(true);
-            stmt = connection.prepareCall(CarreraCRUD.INSERTARCARRERA);
-            stmt.setString(1, codigo);
-            stmt.setString(2, nombre);
-            stmt.setString(3, titulo);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
+    public void insertarCarrera(String codigo, String nombre, String titulo) throws SQLException {
+        connection.setAutoCommit(true);
+        CallableStatement stmt = connection.prepareCall(CarreraCRUD.INSERTARCARRERA);
+        stmt.setString(1, codigo);
+        stmt.setString(2, nombre);
+        stmt.setString(3, titulo);
+        stmt.executeUpdate();
+        stmt.close();
     }
 
-    public void modificarCarrera(String codigo, String nombre, String titulo) {
-        CallableStatement stmt = null;
+    public void modificarCarrera(String codigo, String nombre, String titulo) throws SQLException {
 
-        try {
-            connection.setAutoCommit(true);
-            stmt = connection.prepareCall(CarreraCRUD.MODIFICARCARRERA);
-            stmt.setString(1, codigo);
-            stmt.setString(2, nombre);
-            stmt.setString(3, titulo);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
+        connection.setAutoCommit(true);
+        CallableStatement stmt = connection.prepareCall(CarreraCRUD.MODIFICARCARRERA);
+        stmt.setString(1, codigo);
+        stmt.setString(2, nombre);
+        stmt.setString(3, titulo);
+        stmt.executeUpdate();
+        stmt.close();
     }
 
-    public void eliminarCarrera(String codigo) {
+    public void eliminarCarrera(String codigo) throws SQLException {
         CallableStatement stmt = null;
-
-        try {
-            connection.setAutoCommit(true);
-            stmt = connection.prepareCall(CarreraCRUD.ELIMINARCARRERA);
-            stmt.setString(1, codigo);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
+        connection.setAutoCommit(true);
+        stmt = connection.prepareCall(CarreraCRUD.ELIMINARCARRERA);
+        stmt.setString(1, codigo);
+        stmt.executeUpdate();
+        stmt.close();
     }
 
-    public JSONObject buscarCarrera(String codigo) {
-        CallableStatement stmt = null;
-        ResultSet rs = null;
+    public JSONObject buscarCarrera(String codigo) throws SQLException {
 
         JSONObject carrera = new JSONObject();
-        try {
-            connection.setAutoCommit(false);
-            stmt = connection.prepareCall(CarreraCRUD.BUSCARCARRERA);
-            stmt.registerOutParameter(1, OracleTypes.CURSOR);
-            stmt.setString(2, codigo);
-            stmt.execute();
 
-            rs = (ResultSet) stmt.getObject(1);
-            while (rs.next()) {
-                carrera.put("codigo", rs.getString("codigo"));
-                carrera.put("nombre", rs.getString("nombre"));
-                carrera.put("titulo", rs.getString("nombre"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(CarreraCRUD.BUSCARCARRERA);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.setString(2, codigo);
+        stmt.execute();
+
+        ResultSet rs = (ResultSet) stmt.getObject(1);
+        while (rs.next()) {
+            carrera.put("codigo", rs.getString("codigo"));
+            carrera.put("nombre", rs.getString("nombre"));
+            carrera.put("titulo", rs.getString("titulo"));
         }
-
+        rs.close();
+        stmt.close();
         return carrera;
     }
 
-    public JSONArray listarCarrera() {
-        CallableStatement stmt = null;
-        ResultSet rs = null;
+    public JSONArray listarCarrera() throws SQLException {
 
         JSONArray carreras = new JSONArray();
-        try {
-            connection.setAutoCommit(false);
-            stmt = connection.prepareCall(CarreraCRUD.LISTARCARRERA);
-            stmt.registerOutParameter(1, OracleTypes.CURSOR);
-            stmt.execute();
 
-            rs = (ResultSet) stmt.getObject(1);
-            while (rs.next()) {
-                JSONObject carrera = new JSONObject();
-                carrera.put("codigo", rs.getString("codigo"));
-                carrera.put("nombre", rs.getString("nombre"));
-                carrera.put("titulo", rs.getString("nombre"));
-                carreras.put(carrera);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(CarreraCRUD.LISTARCARRERA);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.execute();
+
+        ResultSet rs = (ResultSet) stmt.getObject(1);
+        while (rs.next()) {
+            JSONObject carrera = new JSONObject();
+            carrera.put("codigo", rs.getString("codigo"));
+            carrera.put("nombre", rs.getString("nombre"));
+            carrera.put("titulo", rs.getString("titulo"));
+            carreras.put(carrera);
         }
-
+        rs.close();
+        stmt.close();
         return carreras;
     }
 }

@@ -4,10 +4,7 @@ import oracle.jdbc.OracleTypes;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UsuarioDAO {
     private static UsuarioDAO instance = null;
@@ -18,131 +15,90 @@ public class UsuarioDAO {
         return instance;
     }
 
-    public void insertarUsuario(String cedula, String nombre, int perfil) {
-        CallableStatement stmt = null;
-
-        try {
-            connection.setAutoCommit(true);
-            stmt = connection.prepareCall(UsuarioCRUD.INSERTARUSUARIO);
-            stmt.setString(1, cedula);
-            stmt.setString(2, nombre);
-            stmt.setInt(3, perfil);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
+    public void insertarUsuario(String cedula, String clave, int perfil) throws SQLException {
+        connection.setAutoCommit(true);
+        CallableStatement stmt = connection.prepareCall(UsuarioCRUD.INSERTARUSUARIO);
+        stmt.setString(1, cedula);
+        stmt.setString(2, clave);
+        stmt.setInt(3, perfil);
+        stmt.executeUpdate();
+        stmt.close();
     }
 
 
-    public void modificarUsuario(String cedula, String nombre, int perfil) {
-        CallableStatement stmt = null;
-
-        try {
-            connection.setAutoCommit(true);
-            stmt = connection.prepareCall(UsuarioCRUD.MODIFICARUSUARIO);
-            stmt.setString(1, cedula);
-            stmt.setString(2, nombre);
-            stmt.setInt(3, perfil);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
+    public void modificarUsuario(String cedula, String clave) throws SQLException {
+        connection.setAutoCommit(true);
+        CallableStatement stmt = connection.prepareCall(UsuarioCRUD.MODIFICARUSUARIO);
+        stmt.setString(1, cedula);
+        stmt.setString(2, clave);
+        stmt.executeUpdate();
+        stmt.close();
     }
 
-    public void eliminarUsuario(String cedula) {
-        CallableStatement stmt = null;
-
-        try {
-            connection.setAutoCommit(true);
-            stmt = connection.prepareCall(UsuarioCRUD.ELIMINARUSUARIO);
-            stmt.setString(1, cedula);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
+    public void eliminarUsuario(String cedula) throws SQLException {
+        connection.setAutoCommit(true);
+        CallableStatement stmt = connection.prepareCall(UsuarioCRUD.ELIMINARUSUARIO);
+        stmt.setString(1, cedula);
+        stmt.executeUpdate();
+        stmt.close();
     }
 
-    public JSONObject buscarUsuario(String cedula) {
-        CallableStatement stmt = null;
-        ResultSet rs = null;
-
+    public JSONObject buscarUsuario(String cedula) throws SQLException {
         JSONObject usuario = new JSONObject();
-        try {
-            connection.setAutoCommit(false);
-            stmt = connection.prepareCall(UsuarioCRUD.BUSCARUSUARIO);
-            stmt.registerOutParameter(1, OracleTypes.CURSOR);
-            stmt.setString(2, cedula);
-            stmt.execute();
 
-            rs = (ResultSet) stmt.getObject(1);
-            while (rs.next()) {
-                usuario.put("cedula", rs.getString("cedula"));
-                usuario.put("clave", rs.getString("clave"));
-                usuario.put("perfil", rs.getInt("perfil"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(UsuarioCRUD.BUSCARUSUARIO);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.setString(2, cedula);
+        stmt.execute();
+
+        ResultSet rs = (ResultSet) stmt.getObject(1);
+        while (rs.next()) {
+            usuario.put("cedula", rs.getString("cedula"));
+            usuario.put("clave", rs.getString("clave"));
+            usuario.put("perfil", rs.getInt("perfil"));
         }
+        rs.close();
+        stmt.close();
 
         return usuario;
     }
 
-    public JSONArray listarUsuario() {
-        CallableStatement stmt = null;
-        ResultSet rs = null;
-
+    public JSONArray listarUsuario() throws SQLException {
         JSONArray usuarios = new JSONArray();
-        try {
-            connection.setAutoCommit(false);
-            stmt = connection.prepareCall(UsuarioCRUD.LISTARUSUARIO);
-            stmt.registerOutParameter(1, OracleTypes.CURSOR);
-            stmt.execute();
 
-            rs = (ResultSet) stmt.getObject(1);
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(UsuarioCRUD.LISTARUSUARIO);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.execute();
 
-            while (rs.next()) {
-                JSONObject usuario = new JSONObject();
-                usuario.put("cedula", rs.getString("cedula"));
-                usuario.put("clave", rs.getString("clave"));
-                usuario.put("perfil", rs.getInt("perfil"));
-                usuarios.put(usuario);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
+        ResultSet rs = (ResultSet) stmt.getObject(1);
+
+        while (rs.next()) {
+            JSONObject usuario = new JSONObject();
+            usuario.put("cedula", rs.getString("cedula"));
+            usuario.put("clave", rs.getString("clave"));
+            usuario.put("perfil", rs.getInt("perfil"));
+            usuarios.put(usuario);
         }
+        rs.close();
+        stmt.close();
 
         return usuarios;
+    }
+
+    public String login(String cedula, String clave) throws SQLException {
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(UsuarioCRUD.LOGIN);
+        stmt.registerOutParameter(1, Types.VARCHAR);
+        stmt.setString(2, cedula);
+        stmt.setString(3, clave);
+        stmt.execute();
+
+        String authorization = stmt.getString(1);
+
+        stmt.close();
+
+        return authorization;
     }
 }

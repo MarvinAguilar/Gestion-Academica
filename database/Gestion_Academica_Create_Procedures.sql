@@ -382,62 +382,6 @@ end;
 /
 
 
---=================PROCEDIMIENTOS ALMACENADOS - TABLA PERFIL=================
---INSERT
-create or replace procedure spInsertarPerfil(
-    in_id in perfil.id%type, 
-    in_nombre in perfil.nombre%type
-)
-as
-begin
-    insert into perfil values(in_id, in_nombre);
-end;
-/
---UPDATE
-create or replace procedure spModificarPerfil(
-    in_id in grupo.numero%type, 
-    in_nombre in grupo.horario%type
-)
-as
-begin
-    update perfil set nombre = in_nombre
-        where id = in_id;
-end;
-/
---DELETE
-create or replace procedure spEliminarPerfil(
-    in_id in grupo.numero%type
-)
-as
-begin
-    delete from perfil where id = in_id;
-end;
-/
---FUNCIONES - TABLA PERFIL
-create or replace function buscarPerfil(
-    in_id in grupo.numero%type
-)
-return types.refCursor
-as 
-    perfilCursor types.refCursor;
-begin 
-    open perfilCursor for
-        select * from perfil where id = in_id;
-    return perfilCursor;
-end;
-/
-create or replace function listarPerfil
-return types.refCursor
-as
-    perfilCursor types.refCursor;
-begin
-    open perfilCursor for
-        select * from perfil;
-    return perfilCursor;
-end;
-/
-
-
 --=================PROCEDIMIENTOS ALMACENADOS - TABLA USUARIO=================
 --INSERT
 create or replace procedure spInsertarUsuario(
@@ -453,12 +397,11 @@ end;
 --UPDATE
 create or replace procedure spModificarUsuario(
     in_cedula in usuario.cedula%type, 
-    in_clave in usuario.clave%type,
-    in_perfil in usuario.perfil%type
+    in_clave in usuario.clave%type
 )
 as
 begin
-    update usuario set clave = in_clave, perfil = in_perfil
+    update usuario set clave = in_clave
         where cedula = in_cedula;
 end;
 /
@@ -494,6 +437,31 @@ begin
     return usuarioCursor;
 end;
 /
+create or replace function login(
+    in_cedula in usuario.cedula%type,
+    in_clave in usuario.clave%type
+)
+return varchar
+is
+    user varchar(10);
+    pass varchar(30);
+begin
+    select clave
+        into pass
+        from usuario
+        where cedula = in_cedula;
+
+    if in_clave = pass then
+        return 'Autorizado';
+    else
+        return 'None';
+    end if;
+	
+	EXCEPTION
+		when pass is null then
+			return 'None';
+end;
+/
 
 
 --===============PROCEDIMIENTOS ALMACENADOS - TABLA CURSOSCARRERA===============
@@ -509,30 +477,28 @@ begin
     insert into cursosCarrera values(in_codigoCarrera, in_codigoCurso, in_annoCiclo, in_numeroCiclo);
 end;
 /
+
+
 --DELETE
 create or replace procedure spEliminarCursosCarrera(
     in_codigoCarrera in cursosCarrera.codigoCarrera%type, 
-    in_codigoCurso in cursosCarrera.codigoCurso%type,
-    in_annoCiclo in cursosCarrera.annoCiclo%type,
-    in_numeroCiclo in cursosCarrera.numeroCiclo%type
+    in_codigoCurso in cursosCarrera.codigoCurso%type
 )
 as
 begin
-    delete from cursosCarrera where codigoCarrera = in_codigoCarrera and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+    delete from cursosCarrera where codigoCarrera = in_codigoCarrera and codigoCurso = in_codigoCurso;
 end;
 /
 create or replace function buscarCursosCarrera(
     in_codigoCarrera in cursosCarrera.codigoCarrera%type, 
     in_codigoCurso in cursosCarrera.codigoCurso%type,
-    in_annoCiclo in cursosCarrera.annoCiclo%type,
-    in_numeroCiclo in cursosCarrera.numeroCiclo%type
 )
 return types.refCursor
 as 
     cursosCarreraCursor types.refCursor;
 begin 
     open cursosCarreraCursor for
-        select * from cursosCarrera where codigoCarrera = in_codigoCarrera and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+        select * from cursosCarrera where codigoCarrera = in_codigoCarrera and codigoCurso = in_codigoCurso;
     return cursosCarreraCursor;
 end;
 /

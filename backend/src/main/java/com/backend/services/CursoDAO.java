@@ -18,134 +18,78 @@ public class CursoDAO {
         return instance;
     }
 
-    public void insertarCurso(String codigo, String nombre, int creditos, int horasSemanales) {
-        CallableStatement stmt = null;
-
-        try {
-            connection.setAutoCommit(true);
-            stmt = connection.prepareCall(CursoCRUD.INSERTARCURSO);
-            stmt.setString(1, codigo);
-            stmt.setString(2, nombre);
-            stmt.setInt(3, creditos);
-            stmt.setInt(4, horasSemanales);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
+    public void insertarCurso(String codigo, String nombre, int creditos, int horasSemanales) throws SQLException {
+        connection.setAutoCommit(true);
+        CallableStatement stmt = connection.prepareCall(CursoCRUD.INSERTARCURSO);
+        stmt.setString(1, codigo);
+        stmt.setString(2, nombre);
+        stmt.setInt(3, creditos);
+        stmt.setInt(4, horasSemanales);
+        stmt.executeUpdate();
+        stmt.close();
     }
 
-    public void modificarCurso(String codigo, String nombre, int creditos, int horasSemanales) {
-        CallableStatement stmt = null;
-
-        try {
-            connection.setAutoCommit(true);
-            stmt = connection.prepareCall(CursoCRUD.MODIFICARCURSO);
-            stmt.setString(1, codigo);
-            stmt.setString(2, nombre);
-            stmt.setInt(3, creditos);
-            stmt.setInt(4, horasSemanales);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
+    public void modificarCurso(String codigo, String nombre, int creditos, int horasSemanales) throws SQLException {
+        connection.setAutoCommit(true);
+        CallableStatement stmt = connection.prepareCall(CursoCRUD.MODIFICARCURSO);
+        stmt.setString(1, codigo);
+        stmt.setString(2, nombre);
+        stmt.setInt(3, creditos);
+        stmt.setInt(4, horasSemanales);
+        stmt.executeUpdate();
+        stmt.close();
     }
 
-    public void eliminarCurso(String codigo) {
-        CallableStatement stmt = null;
+    public void eliminarCurso(String codigo) throws SQLException {
+        connection.setAutoCommit(true);
+        CallableStatement stmt = connection.prepareCall(CursoCRUD.ELIMINARCURSO);
+        stmt.setString(1, codigo);
+        stmt.executeUpdate();
+        stmt.close();
 
-        try {
-            connection.setAutoCommit(true);
-            stmt = connection.prepareCall(CursoCRUD.ELIMINARCURSO);
-            stmt.setString(1, codigo);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    public JSONObject buscarCurso(String codigo) {
-        CallableStatement stmt = null;
-        ResultSet rs = null;
-
+    public JSONObject buscarCurso(String codigo) throws SQLException {
         JSONObject curso = new JSONObject();
-        try {
-            connection.setAutoCommit(false);
-            stmt = connection.prepareCall(CursoCRUD.BUSCARCURSO);
-            stmt.registerOutParameter(1, OracleTypes.CURSOR);
-            stmt.setString(2, codigo);
-            stmt.execute();
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(CursoCRUD.BUSCARCURSO);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.setString(2, codigo);
+        stmt.execute();
 
-            rs = (ResultSet) stmt.getObject(1);
-            while (rs.next()) {
-                curso.put("codigo", rs.getString("codigo"));
-                curso.put("nombre", rs.getString("nombre"));
-                curso.put("creditos", rs.getInt("creditos"));
-                curso.put("horasSemanales", rs.getInt("horasSemanales"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
+        ResultSet rs = (ResultSet) stmt.getObject(1);
+        while (rs.next()) {
+            curso.put("codigo", rs.getString("codigo"));
+            curso.put("nombre", rs.getString("nombre"));
+            curso.put("creditos", rs.getInt("creditos"));
+            curso.put("horasSemanales", rs.getInt("horasSemanales"));
         }
+        rs.close();
+        stmt.close();
 
         return curso;
     }
 
-    public JSONArray listarCurso() {
-        CallableStatement stmt = null;
-        ResultSet rs = null;
+    public JSONArray listarCurso() throws SQLException {
 
         JSONArray cursos = new JSONArray();
-        try {
-            connection.setAutoCommit(false);
-            stmt = connection.prepareCall(CursoCRUD.LISTARCURSO);
-            stmt.registerOutParameter(1, OracleTypes.CURSOR);
-            stmt.execute();
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(CursoCRUD.LISTARCURSO);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.execute();
 
-            rs = (ResultSet) stmt.getObject(1);
+        ResultSet rs = (ResultSet) stmt.getObject(1);
 
-            while (rs.next()) {
-                JSONObject curso = new JSONObject();
-                curso.put("codigo", rs.getString("codigo"));
-                curso.put("nombre", rs.getString("nombre"));
-                curso.put("creditos", rs.getInt("creditos"));
-                curso.put("horasSemanales", rs.getInt("horasSemanales"));
-                cursos.put(curso);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-            }
+        while (rs.next()) {
+            JSONObject curso = new JSONObject();
+            curso.put("codigo", rs.getString("codigo"));
+            curso.put("nombre", rs.getString("nombre"));
+            curso.put("creditos", rs.getInt("creditos"));
+            curso.put("horasSemanales", rs.getInt("horasSemanales"));
+            cursos.put(curso);
         }
-
+        rs.close();
+        stmt.close();
         return cursos;
     }
 }

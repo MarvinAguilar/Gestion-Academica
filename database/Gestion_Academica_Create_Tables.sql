@@ -77,32 +77,19 @@ create table grupo(
         references ciclo (anno, numero)
 );
 
-create table perfil(
-    id int,
-    nombre varchar(50),
-    constraint pkPerfil primary key (id)
-);
-
 create table usuario(
-    cedula varchar(10),
-    clave varchar(30),
+    cedula varchar2(10),
+    clave varchar2(30),
     perfil int,
-    constraint pkUsuario primary key (cedula),
-    constraint fkPerfil foreign key (perfil) 
-        references perfil (id)
+    constraint pkUsuario primary key (cedula)
 );
 
 create table cursosCarrera(
-    codigoCarrera varchar(10),
-    codigoCurso varchar(10),
+    codigoCarrera varchar2(10),
+    codigoCurso varchar2(10),
     annoCiclo int,
     numeroCiclo int,
-    constraint pkCarreraCursos primary key (
-        codigoCarrera,
-        codigoCurso,
-        annoCiclo,
-        numeroCiclo
-    ),
+    constraint pkCarreraCursos primary key (codigoCarrera, codigoCurso),
     constraint fkCicloCurso foreign key (annoCiclo, numeroCiclo)
         references ciclo (anno, numero),
     constraint fkCarreraCurso foreign key (codigoCarrera)
@@ -112,9 +99,9 @@ create table cursosCarrera(
 );
 
 create table estudiantesGrupo(
-    cedulaEstudiante varchar(10),
+    cedulaEstudiante varchar2(10),
     numeroGrupo int,
-    codigoCurso varchar(10), 
+    codigoCurso varchar2(10), 
     annoCiclo int, 
     numeroCiclo int, 
     nota float,
