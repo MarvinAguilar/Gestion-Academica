@@ -1,5 +1,7 @@
 package com.backend.controller;
 
+import com.backend.model.AlumnoModel;
+import com.backend.model.ProfesorModel;
 import com.backend.model.UsuarioModel;
 import org.javatuples.Pair;
 import org.json.JSONException;
@@ -17,26 +19,21 @@ public class SessionController {
     private static final UsuarioModel model = UsuarioModel.getInstance();
     private static SessionController instance = null;
 
-    private static final Map<String, Pair<String, String>> tokenData = new HashMap<>();
-    private static Map<Session, String> sessionTokens = new HashMap<>();
-
-    private static final SecureRandom secureRandom = new SecureRandom();
-    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
 
     public static SessionController getInstance() {
         if (instance == null) instance = new SessionController();
         return instance;
     }
 
-    public JSONObject processRequest(JSONObject object, Session session) {
+    public JSONObject processRequest(JSONObject object) {
         if (object == null) return null;
 
         try {
             switch (object.getString("request")) {
                 case "LOGIN":
-                    return login(object.getString("cedula"), object.getString("clave"), session);
+                    return login(object);
                 case "LOGOUT":
-                    return logout(session);
+                    return logout();
                 default:
                     return null;
             }
@@ -45,8 +42,10 @@ public class SessionController {
         }
     }
 
-    public JSONObject login(String cedula, String clave, Session session) {
+    public JSONObject login(JSONObject object) {
         try {
+            String cedula = object.getString("cedula");
+            String clave = object.getString("clave");
 
 
             if (cedula == null && clave == null) return loginNoAutorizado();
@@ -54,37 +53,63 @@ public class SessionController {
             String autorizacion = model.login(cedula, clave);
             if (autorizacion == "None") return loginNoAutorizado();
 
-            return loginAutorizado(cedula, clave, session);
+            return loginAutorizado(cedula);
         } catch (SQLException e) {
             return null;
         }
     }
 
-    public JSONObject logout(Session session) {
-        if (!sessionTokens.containsKey(session)) return null;
+    public JSONObject logout() {
 
-        String token = sessionTokens.get(session);
-        sessionTokens = sessionTokens.entrySet().stream()
-                .filter((e) -> !e.getValue().equals(token))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        tokenData.remove(token);
 
         JSONObject response = new JSONObject();
         response.put("request", "LOGOUT");
         return response;
     }
 
-    public JSONObject loginAutorizado(String cedula, String clave, Session session) {
+    public JSONObject loginAutorizado(String cedula) {
         JSONObject response = new JSONObject();
 
-        String token = generarToken();
-        sessionTokens.put(session, token);
-        tokenData.put(token, Pair.with(cedula, clave));
 
-        response.put("request", "LOGIN");
-        response.put("cedula", cedula);
-        response.put("token", token);
-        return response;
+        try {
+            JSONObject usuario = model.buscarUsuario(cedula);
+
+            response.put("request", "LOGIN");
+            response.put("cedula", cedula);
+            response.put("perfil", usuario.getInt("perfil"));
+
+            obtieneDatosUsuario(cedula, response, usuario.getInt("perfil"));
+
+
+            return response;
+        }catch(SQLException e){
+            response.put("request", "ERROR");
+            return response;
+        }
+    }
+
+    public void obtieneDatosUsuario(String cedula, JSONObject response, int perfil){
+        JSONObject usuario = null;
+        try {
+            switch (perfil) {
+                case 3:
+                    usuario = ProfesorModel.getInstance().buscarProfesor(cedula);
+                    response.put("nombre", usuario.getString("nombre"));
+                    response.put("telefono", usuario.getString("telefono"));
+                    response.put("email", usuario.getString("email"));
+                    break;
+                case 4:
+                    usuario = AlumnoModel.getInstance().buscarAlumno(cedula);
+                    response.put("nombre", usuario.getString("nombre"));
+                    response.put("telefono", usuario.getString("telefono"));
+                    response.put("email", usuario.getString("email"));
+                    response.put("fechaNacimiento", usuario.getString("fechaNacimiento"));
+                    break;
+            }
+        }catch (SQLException e){
+
+        }
+
     }
 
     public JSONObject loginNoAutorizado() {
@@ -95,27 +120,5 @@ public class SessionController {
         return response;
     }
 
-    private Pair<String, String> obtenerDatosSession(Session session) {
-        String token = sessionTokens.get(session);
-        return tokenData.get(token);
-    }
 
-    private JSONObject loginActivo(Session session) {
-        JSONObject response = new JSONObject();
-
-        String token = sessionTokens.get(session);
-        Object cedula = obtenerDatosSession(session).getValue(0);
-
-        response.put("request", "LOGIN");
-        response.put("cedula", cedula);
-        response.put("token", token);
-        return response;
-    }
-
-
-    private static String generarToken() {
-        byte[] randomBytes = new byte[24];
-        secureRandom.nextBytes(randomBytes);
-        return base64Encoder.encodeToString(randomBytes);
-    }
 }
