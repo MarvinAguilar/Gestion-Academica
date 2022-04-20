@@ -86,6 +86,7 @@ public class CicloDAO {
         while (rs.next()) {
             JSONObject ciclo = new JSONObject();
             ciclo.put("anno", rs.getInt("anno"));
+            ciclo.put("numero", rs.getInt("numero"));
             ciclo.put("fechaInicio", rs.getDate("fechaInicio").toString());
             ciclo.put("fechaFinal", rs.getDate("fechaFinal").toString());
             ciclo.put("estado", rs.getInt("estado"));

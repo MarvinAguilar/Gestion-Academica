@@ -2,140 +2,121 @@ package com.backend.controller;
 
 import com.backend.model.GrupoModel;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+import java.io.IOException;
 import java.sql.SQLException;
 
-public class GrupoController {
+import static com.backend.utils.requestToJson.getJsonRequest;
 
-    private static GrupoModel model = GrupoModel.getInstance();
-    private static GrupoController instance = null;
+@WebServlet(name = "GrupoController", urlPatterns = {"/grupos", "/grupo"})
+public class GrupoController extends HttpServlet {
 
-    public static GrupoController getInstance() {
-        if (instance == null) instance = new GrupoController();
-        return instance;
-    }
+    private static final GrupoModel model = GrupoModel.getInstance();
 
-    public JSONObject processRequest(JSONObject object) {
-        if (object == null) return null;
-        try {
-            switch (object.getString("request")) {
-                case "GET":
-                    return buscarGrupo(object);
-                case "GET_ALL":
-                    return listarGrupo();
-                case "POST":
-                    return insertarGrupo(object);
-                case "PUT":
-                    return modificarGrupo(object);
-                case "DELETE":
-                    return eliminarGrupo(object);
-                default:
-                    return null;
-            }
-        } catch (JSONException e) {
-            return null;
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        switch (request.getServletPath()) {
+            case "/grupos":
+                listarGrupo(response);
+                break;
+            case "/grupo":
+                buscarGrupo(request, response);
+                break;
         }
     }
 
-    public JSONObject buscarGrupo(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONObject grupo = model.buscarGrupo(object.getInt("numero"),
-                    object.getString("cedulaProfesor"),
-                    object.getString("codigoCurso"),
-                    object.getInt("annoCiclo"),
-                    object.getInt("numeroCiclo"));
-            response.put("request", "GET");
-            response.put("Grupo", grupo);
+            model.insertarGrupo(
+                    requestData.getInt("numero"),
+                    requestData.getString("horario"),
+                    requestData.getString("cedulaProfesor"),
+                    requestData.getString("codigoCurso"),
+                    requestData.getInt("annoCiclo"),
+                    requestData.getInt("numeroCiclo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject insertarGrupo(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.insertarGrupo(object.getInt("numero"),
-                    object.getString("horario"),
-                    object.getString("cedulaProfesor"),
-                    object.getString("codigoCurso"),
-                    object.getInt("annoCiclo"),
-                    object.getInt("numeroCiclo"));
-            response.put("response", "CREATED");
+            model.modificarGrupo(
+                    requestData.getInt("numero"),
+                    requestData.getString("horario"),
+                    requestData.getString("cedulaProfesor"),
+                    requestData.getString("codigoCurso"),
+                    requestData.getInt("annoCiclo"),
+                    requestData.getInt("numeroCiclo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject listarGrupo() {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONArray Grupos = model.listarGrupo();
-            response.put("request", "GET_ALL");
-            response.put("Grupos", Grupos);
+            model.eliminarGrupo(requestData.getInt("numero"),
+                    requestData.getString("codigoCurso"),
+                    requestData.getInt("annoCiclo"),
+                    requestData.getInt("numeroCiclo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject modificarGrupo(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void listarGrupo(HttpServletResponse response) throws IOException {
+        JSONArray grupos = new JSONArray();
 
         try {
-            model.modificarGrupo(object.getInt("numero"),
-                    object.getString("horario"),
-                    object.getString("cedulaProfesor"),
-                    object.getString("codigoCurso"),
-                    object.getInt("annoCiclo"),
-                    object.getInt("numeroCiclo"));
-            response.put("response", "MODIFICATED");
+            grupos = model.listarGrupo();
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(grupos));
     }
 
-    public JSONObject eliminarGrupo(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void buscarGrupo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject grupo = new JSONObject();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.eliminarGrupo(object.getInt("numero"),
-                    object.getString("codigoCurso"),
-                    object.getInt("annoCiclo"),
-                    object.getInt("numeroCiclo"));
-            response.put("response", "ELIMINATED");
+            grupo = model.buscarGrupo(
+                    requestData.getInt("numero"),
+                    requestData.getString("cedulaProfesor"),
+                    requestData.getString("codigoCurso"),
+                    requestData.getInt("annoCiclo"),
+                    requestData.getInt("numeroCiclo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(grupo));
     }
-
 }

@@ -1,132 +1,112 @@
 package com.backend.controller;
 
 import com.backend.model.CursosCarreraModel;
-import com.backend.model.CursoModel;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+import java.io.IOException;
 import java.sql.SQLException;
 
-public class CursosCarreraController {
+import static com.backend.utils.requestToJson.getJsonRequest;
 
-    private static CursosCarreraModel model = CursosCarreraModel.getInstance();
-    private static CursosCarreraController instance = null;
+@WebServlet(name = "CursosCarreraController", urlPatterns = {"/curso-carreras", "/curso-carrera"})
+public class CursosCarreraController extends HttpServlet {
 
-    public static CursosCarreraController getInstance() {
-        if (instance == null) instance = new CursosCarreraController();
-        return instance;
-    }
+    private final static CursosCarreraModel model = CursosCarreraModel.getInstance();
 
-    public JSONObject processRequest(JSONObject object) {
-        if (object == null) return null;
-        try {
-            switch (object.getString("request")) {
-                case "GET":
-                    return buscarCursosCarrera(object);
-                case "GET_ALL":
-                    return listarCursosCarrera(object);
-                case "POST":
-                    return insertarCursosCarrera(object);
-                case "PUT":
-                    return null;
-                case "DELETE":
-                    return eliminarCursosCarrera(object);
-                default:
-                    return null;
-            }
-        } catch (JSONException e) {
-            return null;
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        switch (request.getServletPath()) {
+            case "/curso-carreras":
+                listarCurso(request, response);
+                break;
+            case "/curso-carrera":
+                buscarCursos(request, response);
+                break;
         }
     }
 
-    public JSONObject buscarCursosCarrera(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONObject cursosCarrera = model.buscarCursosCarrera(object.getString("codigoCarrera"), object.getString("codigoCurso"));
-            response.put("request", "GET");
-            response.put("CursosCarrera", cursosCarrera);
+            model.insertarCursosCarrera(
+                    requestData.optString("codigoCarrera"),
+                    requestData.optString("codigoCurso"),
+                    requestData.optInt("annoCiclo"),
+                    requestData.optInt("numeroCiclo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject insertarCursosCarrera(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.insertarCursosCarrera(object.getString("codigoCarrera"),
-                    object.getString("codigoCurso"),
-                    object.getInt("annoCiclo"),
-                    object.getInt("numeroCiclo"));
-            response.put("response", "CREATED");
+            model.modificarCursosCarrera(
+                    requestData.optString("codigoCarrera"),
+                    requestData.optString("codigoCurso"),
+                    requestData.optInt("annoCiclo"),
+                    requestData.optInt("numeroCiclo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject listarCursosCarrera(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONArray cursosCarreras = model.listarCursosCarrera(object.getString("codigoCarrera"));
-            response.put("request", "GET_ALL");
-            response.put("CursosCarreras", cursosCarreras);
+            model.eliminarCursosCarrera(requestData.optString("codigoCarrera"),
+                    requestData.optString("codigoCurso"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-//    public JSONObject modificarCursosCarrera(JSONObject object) {
-//        JSONObject response = new JSONObject();
-//
-//        try {
-//            model.modificarCursosCarrera(object.getInt("anno"),
-//                    object.getInt("numero"),
-//                    object.getString("fechaInicio"),
-//                    object.getString("fechaFinal"),
-//                    object.getInt("estado"));
-//            response.put("response", "MODIFICATED");
-//        } catch (SQLException e) {
-//            response.put("response", "ERROR");
-//            response.put("message", e.getMessage());
-//        } catch (JSONException e) {
-//            return null;
-//        }
-//
-//        return response;
-//    }
+    protected void listarCurso(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject cursos = new JSONObject();
 
-    public JSONObject eliminarCursosCarrera(JSONObject object) {
-        JSONObject response = new JSONObject();
-
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
         try {
-            model.eliminarCursosCarrera(object.getString("codigoCarrera"), object.getString("codigoCurso"));
-            response.put("response", "ELIMINATED");
+            cursos = model.listarCursosCarrera(requestData.optString("codigoCarrera"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(cursos));
+    }
+
+    protected void buscarCursos(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject curso = new JSONObject();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
+        try {
+            curso = model.buscarCursosCarrera(requestData.optString("codigoCarrera"), requestData.optString("codigoCurso"));
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(curso));
     }
 
 }

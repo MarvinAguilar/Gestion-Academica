@@ -19,7 +19,7 @@ public class CursosCarreraModel {
         return instance;
     }
 
-    public JSONArray listarCursosCarrera(String carrera) throws SQLException {
+    public JSONObject listarCursosCarrera(String carrera) throws SQLException {
         return this.dao.listarCurso(carrera);
     }
 
@@ -31,9 +31,9 @@ public class CursosCarreraModel {
         this.dao.insertarCursoCarrera(carrera, curso, anno, numeroCiclo);
     }
 
-    //public void modificarCursosCarrera(int numero, String horario, String cedulaProfesor, String codigoCurso, int annoCiclo, int numeroCiclo){
-    //    this.dao.modificarCursosCarrera(numero, horario, cedulaProfesor, codigoCurso, annoCiclo, numeroCiclo);
-    //}
+    public void modificarCursosCarrera(String carrera, String curso, int anno, int numeroCiclo) throws SQLException {
+        this.dao.modificaCursoCarrera(carrera, curso, anno, numeroCiclo);
+    }
 
     public void eliminarCursosCarrera(String carrera, String codigoCurso) throws SQLException {
         this.dao.eliminarCurso(carrera, codigoCurso);

@@ -1,129 +1,108 @@
 package com.backend.controller;
 
-import com.backend.model.CursoModel;
 import com.backend.model.ProfesorModel;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+import java.io.IOException;
 import java.sql.SQLException;
 
-public class ProfesorController {
-    private static ProfesorModel model = ProfesorModel.getInstance();
-    private static ProfesorController instance = null;
+import static com.backend.utils.requestToJson.getJsonRequest;
 
-    public static ProfesorController getInstance() {
-        if (instance == null) instance = new ProfesorController();
-        return instance;
-    }
+@WebServlet(name = "ProfesorController", urlPatterns = {"/profesores", "/profesor"})
+public class ProfesorController extends HttpServlet {
 
-    public JSONObject processRequest(JSONObject object) {
-        if (object == null) return null;
-        try {
-            switch (object.getString("request")) {
-                case "GET":
-                    return buscarProfesor(object);
-                case "GET_ALL":
-                    return listarProfesor();
-                case "POST":
-                    return insertarProfesor(object);
-                case "PUT":
-                    return modificarProfesor(object);
-                case "DELETE":
-                    return eliminarProfesor(object);
-                default:
-                    return null;
-            }
-        } catch (JSONException e) {
-            return null;
+    private static final ProfesorModel model = ProfesorModel.getInstance();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        switch (request.getServletPath()) {
+            case "/profesores":
+                listarProfesor(response);
+                break;
+            case "/profesor":
+                buscarProfesor(request, response);
+                break;
         }
     }
 
-    public JSONObject buscarProfesor(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONObject profesor = model.buscarProfesor(object.getString("cedula"));
-            response.put("request", "GET");
-            response.put("profesor", profesor);
+            model.insertarProfesor(
+                    requestData.optString("cedula"),
+                    requestData.optString("nombre"),
+                    requestData.optString("telefono"),
+                    requestData.optString("email")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject listarProfesor() {
-        JSONObject response = new JSONObject();
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONArray profesores = model.listarProfesor();
-            response.put("request", "GET_ALL");
-            response.put("profesores", profesores);
+            model.modificarProfesor(
+                    requestData.optString("cedula"),
+                    requestData.optString("nombre"),
+                    requestData.optString("telefono"),
+                    requestData.optString("email")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject insertarProfesor(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.insertarProfesor(object.getString("cedula"),
-                    object.getString("nombre"),
-                    object.getString("telefono"),
-                    object.getString("email"));
-            response.put("response", "CREATED");
+            model.eliminarProfesor(requestData.optString("cedula"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject modificarProfesor(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void listarProfesor(HttpServletResponse response) throws IOException {
+        JSONArray profesor = new JSONArray();
 
         try {
-            model.modificarProfesor(object.getString("cedula"),
-                    object.getString("nombre"),
-                    object.getString("telefono"),
-                    object.getString("email"));
-            response.put("response", "MODIFICATED");
+            profesor = model.listarProfesor();
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(profesor));
     }
 
-    public JSONObject eliminarProfesor(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void buscarProfesor(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject carrera = new JSONObject();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.eliminarProfesor(object.getString("cedula"));
-            response.put("response", "ELIMINATED");
+            carrera = model.buscarProfesor(requestData.optString("cedula"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(carrera));
     }
+
 }

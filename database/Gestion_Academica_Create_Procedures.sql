@@ -456,10 +456,10 @@ begin
     else
         return 'None';
     end if;
-	
-	EXCEPTION
-		when pass is null then
-			return 'None';
+    
+    exception  
+    when no_data_found then  
+        return 'None';
 end;
 /
 
@@ -478,6 +478,19 @@ begin
 end;
 /
 
+--UPDATE
+create or replace procedure spModificarCursosCarrera(
+    in_codigoCarrera in cursosCarrera.codigoCarrera%type, 
+    in_codigoCurso in cursosCarrera.codigoCurso%type,
+    in_annoCiclo in cursosCarrera.annoCiclo%type,
+    in_numeroCiclo in cursosCarrera.numeroCiclo%type
+)
+as
+begin
+    update cursosCarrera set annoCiclo = in_annoCiclo, numeroCiclo = in_numeroCiclo
+        where codigoCarrera = in_codigoCarrera and codigoCurso = in_codigoCurso;
+end;
+/
 
 --DELETE
 create or replace procedure spEliminarCursosCarrera(
@@ -491,7 +504,7 @@ end;
 /
 create or replace function buscarCursosCarrera(
     in_codigoCarrera in cursosCarrera.codigoCarrera%type, 
-    in_codigoCurso in cursosCarrera.codigoCurso%type,
+    in_codigoCurso in cursosCarrera.codigoCurso%type
 )
 return types.refCursor
 as 

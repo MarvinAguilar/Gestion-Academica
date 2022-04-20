@@ -1,128 +1,150 @@
 package com.backend.controller;
 
+import com.backend.model.AlumnoModel;
+import com.backend.model.ProfesorModel;
 import com.backend.model.UsuarioModel;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+import java.io.IOException;
 import java.sql.SQLException;
 
-public class UsuarioController {
+import static com.backend.utils.requestToJson.getJsonRequest;
 
-    private static UsuarioModel model = UsuarioModel.getInstance();
-    private static UsuarioController instance = null;
+@WebServlet(name = "UsuarioController", urlPatterns = {"/usuarios", "/usuario", "/login"})
+public class UsuarioController extends HttpServlet {
 
-    public static UsuarioController getInstance() {
-        if (instance == null) instance = new UsuarioController();
-        return instance;
+    private final static UsuarioModel model = UsuarioModel.getInstance();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        switch (request.getServletPath()) {
+            case "/usuarios":
+                listarUsuario(response);
+                break;
+            case "/usuario":
+                buscarUsuario(request, response);
+                break;
+            case "/login":
+                login(request, response);
+                break;
+        }
     }
 
-    public JSONObject processRequest(JSONObject object) {
-        if (object == null) return null;
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
         try {
-            switch (object.getString("request")) {
-                case "GET":
-                    return buscarUsuario(object);
-                case "GET_ALL":
-                    return listarUsuario();
-                case "POST":
-                    return insertarUsuario(object);
-                case "PUT":
-                    return modificarUsuario(object);
-                case "DELETE":
-                    return eliminarUsuario(object);
-                default:
-                    return null;
+            model.insertarUsuario(
+                    requestData.getString("cedula"),
+                    requestData.getString("clave"),
+                    requestData.getInt("perfil")
+            );
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
+        try {
+            model.modificarUsuario(
+                    requestData.getString("cedula"),
+                    requestData.getString("clave")
+            );
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
+        try {
+            model.eliminarUsuario(requestData.optString("cedula"));
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    protected void listarUsuario(HttpServletResponse response) throws IOException {
+        JSONArray usuarios = new JSONArray();
+
+        try {
+            usuarios = model.listarUsuario();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(usuarios));
+    }
+
+    protected void buscarUsuario(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject usuario = new JSONObject();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
+        try {
+            usuario = model.buscarUsuario(requestData.optString("cedula"));
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(usuario));
+    }
+
+    protected void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject usuario = new JSONObject();
+        JSONObject usuarioEncontrado = null;
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
+        try {
+            String autorizado = model.login(requestData.optString("cedula"), requestData.optString("clave"));
+
+            if (autorizado != "None") {
+                usuarioEncontrado = model.buscarUsuario(requestData.optString("cedula"));
+                int perfil = usuarioEncontrado.optInt("perfil");
+
+                switch (perfil) {
+                    case 3:
+                        usuario = ProfesorModel.getInstance().buscarProfesor(requestData.optString("cedula"));
+                        usuario.put("perfil", perfil);
+                        break;
+                    case 4:
+                        usuario = AlumnoModel.getInstance().buscarAlumno(requestData.optString("cedula"));
+                        usuario.put("perfil", perfil);
+                        break;
+                    default:
+                        usuario.put("cedula", requestData.optString("cedula"));
+                        usuario.put("perfil", perfil);
+                        break;
+                }
+            } else {
+                usuario.put("cedula", "None");
             }
-        } catch (JSONException e) {
-            return null;
-        }
-    }
-
-    public JSONObject buscarUsuario(JSONObject object) {
-        JSONObject response = new JSONObject();
-
-        try {
-            JSONObject usuario = model.buscarUsuario(object.getString("cedula"));
-            response.put("request", "GET");
-            response.put("usuario", usuario);
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            usuario.put("cedula", "None");
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(usuario));
     }
-
-    public JSONObject listarUsuario() {
-        JSONObject response = new JSONObject();
-
-        try {
-            JSONArray usuarios = model.listarUsuario();
-            response.put("request", "GET_ALL");
-            response.put("usuarios", usuarios);
-        } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
-        }
-
-        return response;
-    }
-
-    public JSONObject insertarUsuario(JSONObject object) {
-        JSONObject response = new JSONObject();
-
-        try {
-            model.insertarUsuario(object.getString("cedula"),
-                    object.getString("clave"),
-                    object.getInt("perfil"));
-            response.put("response", "CREATED");
-        } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
-        }
-
-        return response;
-    }
-
-    public JSONObject modificarUsuario(JSONObject object) {
-        JSONObject response = new JSONObject();
-
-        try {
-            model.modificarUsuario(object.getString("cedula"),
-                    object.getString("clave"),
-                    object.getInt("perfil"));
-            response.put("response", "MODIFICATED");
-        } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
-        }
-
-        return response;
-    }
-
-    public JSONObject eliminarUsuario(JSONObject object) {
-        JSONObject response = new JSONObject();
-
-        try {
-            model.eliminarUsuario(object.getString("cedula"));
-            response.put("response", "ELIMINATED");
-        } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
-        }
-
-        return response;
-    }
-    
 }

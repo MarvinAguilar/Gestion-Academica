@@ -1,127 +1,110 @@
 package com.backend.controller;
 
 import com.backend.model.CarreraModel;
+import org.json.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.stream.Collectors;
 
+import static com.backend.utils.requestToJson.getJsonRequest;
 
-public class CarreraController {
-    private static CarreraModel model = CarreraModel.getInstance();
-    private static CarreraController instance = null;
+@WebServlet(name = "CarreraController", urlPatterns = {"/carreras", "/carrera"})
+public class CarreraController extends HttpServlet {
 
-    public static CarreraController getInstance() {
-        if (instance == null) instance = new CarreraController();
-        return instance;
-    }
+    private static final CarreraModel model = CarreraModel.getInstance();
 
-    public JSONObject processRequest(JSONObject object) {
-        if (object == null) return null;
-        try {
-            switch (object.getString("request")) {
-                case "GET":
-                    return buscarCarrera(object);
-                case "GET_ALL":
-                    return listarCarrera();
-                case "POST":
-                    return insertarCarrera(object);
-                case "PUT":
-                    return modificarCarrera(object);
-                case "DELETE":
-                    return eliminarCarrera(object);
-                default:
-                    return null;
-            }
-        } catch (JSONException e) {
-            return null;
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        switch (request.getServletPath()) {
+            case "/carreras":
+                listarCarrera(response);
+                break;
+            case "/carrera":
+                buscarCarrera(request, response);
+                break;
         }
     }
 
-    public JSONObject buscarCarrera(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONObject carrera = model.buscarCarrera(object.getString("codigo"));
-            response.put("request", "GET");
-            response.put("carrera", carrera);
+            model.insertarCarrera(
+                    requestData.getString("codigo"),
+                    requestData.getString("nombre"),
+                    requestData.getString("titulo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject listarCarrera() {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONArray carreras = model.listarCarrera();
-            response.put("request", "GET_ALL");
-            response.put("carreras", carreras);
+            model.modificarCarrera(
+                    requestData.getString("codigo"),
+                    requestData.getString("nombre"),
+                    requestData.getString("titulo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject insertarCarrera(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.insertarCarrera(object.getString("codigo"),
-                    object.getString("nombre"),
-                    object.getString("titulo"));
-            response.put("response", "CREATED");
+            model.eliminarCarrera(requestData.optString("codigo"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject modificarCarrera(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void listarCarrera(HttpServletResponse response) throws IOException {
+        JSONArray carreras = new JSONArray();
 
         try {
-            model.modificarCarrera(object.getString("codigo"),
-                    object.getString("nombre"),
-                    object.getString("titulo"));
-            response.put("response", "MODIFICATED");
+            carreras = model.listarCarrera();
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(carreras));
     }
 
-    public JSONObject eliminarCarrera(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void buscarCarrera(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject carrera = new JSONObject();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.eliminarCarrera(object.getString("codigo"));
-            response.put("response", "ELIMINATED");
+            carrera = model.buscarCarrera(requestData.optString("codigo"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(carrera));
     }
 }

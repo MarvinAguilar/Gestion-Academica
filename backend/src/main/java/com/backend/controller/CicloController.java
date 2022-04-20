@@ -2,131 +2,111 @@ package com.backend.controller;
 
 import com.backend.model.CicloModel;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.SQLException;
 
-public class CicloController {
+import static com.backend.utils.requestToJson.getJsonRequest;
 
-    private static CicloModel model = CicloModel.getInstance();
-    private static CicloController instance = null;
+@WebServlet(name = "CicloController", urlPatterns = {"/ciclos", "/ciclo"})
+public class CicloController extends HttpServlet {
 
-    public static CicloController getInstance() {
-        if (instance == null) instance = new CicloController();
-        return instance;
-    }
+    private final static CicloModel model = CicloModel.getInstance();
 
-    public JSONObject processRequest(JSONObject object) {
-        if (object == null) return null;
-        try {
-            switch (object.getString("request")) {
-                case "GET":
-                    return buscarCiclo(object);
-                case "GET_ALL":
-                    return listarCiclo();
-                case "POST":
-                    return insertarCiclo(object);
-                case "PUT":
-                    return modificarCiclo(object);
-                case "DELETE":
-                    return eliminarCiclo(object);
-                default:
-                    return null;
-            }
-        } catch (JSONException e) {
-            return null;
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        switch (request.getServletPath()) {
+            case "/ciclos":
+                listarCiclo(response);
+                break;
+            case "/ciclo":
+                buscarCiclo(request, response);
+                break;
         }
     }
 
-    public JSONObject buscarCiclo(JSONObject object) {
-        JSONObject response = new JSONObject();
-
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
         try {
-            JSONObject ciclo = model.buscarCiclo(object.getInt("anno"), object.getInt("numero"));
-            response.put("request", "GET");
-            response.put("ciclo", ciclo);
+            model.insertarCiclo(
+                    requestData.optInt("anno"),
+                    requestData.optInt("numero"),
+                    requestData.optString("fechaInicio"),
+                    requestData.optString("fechaFinal"),
+                    requestData.optInt("estado")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject insertarCiclo(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.insertarCiclo(object.getInt("anno"),
-                    object.getInt("numero"),
-                    object.getString("fechaInicio"),
-                    object.getString("fechaFinal"),
-                    object.getInt("estado"));
-            response.put("response", "CREATED");
+            model.modificarCiclo(
+                    requestData.getInt("anno"),
+                    requestData.getInt("numero"),
+                    requestData.getString("fechaInicio"),
+                    requestData.getString("fechaFinal"),
+                    requestData.getInt("estado")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject listarCiclo() {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONArray ciclos = model.listarCiclo();
-            response.put("request", "GET_ALL");
-            response.put("Ciclos", ciclos);
+            model.eliminarCiclo(requestData.optInt("anno"), requestData.optInt("numero"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject modificarCiclo(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void listarCiclo(HttpServletResponse response) throws IOException {
+        JSONArray ciclos = new JSONArray();
 
         try {
-            model.modificarCiclo(object.getInt("anno"),
-                    object.getInt("numero"),
-                    object.getString("fechaInicio"),
-                    object.getString("fechaFinal"),
-                    object.getInt("estado"));
-            response.put("response", "MODIFICATED");
+            ciclos = model.listarCiclo();
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(ciclos));
     }
 
-    public JSONObject eliminarCiclo(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void buscarCiclo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject ciclo = new JSONObject();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.eliminarCiclo(object.getInt("anno"), object.getInt("numero"));
-            response.put("response", "ELIMINATED");
+            ciclo = model.buscarCiclo(requestData.optInt("anno"), requestData.optInt("numero"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(ciclo));
     }
 
 }

@@ -31,7 +31,7 @@ public class UsuarioModel {
         this.dao.insertarUsuario(cedula, nombre, perfil);
     }
 
-    public void modificarUsuario(String cedula, String nombre, int perfil) throws SQLException {
+    public void modificarUsuario(String cedula, String nombre) throws SQLException {
         this.dao.modificarUsuario(cedula, nombre);
     }
 

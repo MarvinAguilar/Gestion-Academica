@@ -2,127 +2,107 @@ package com.backend.controller;
 
 import com.backend.model.CursoModel;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+import java.io.IOException;
 import java.sql.SQLException;
 
-public class CursoController {
-    private static CursoModel model = CursoModel.getInstance();
-    private static CursoController instance = null;
+import static com.backend.utils.requestToJson.getJsonRequest;
 
-    public static CursoController getInstance() {
-        if (instance == null) instance = new CursoController();
-        return instance;
-    }
+@WebServlet(name = "CursoController", urlPatterns = {"/cursos", "/curso"})
+public class CursoController extends HttpServlet {
 
-    public JSONObject processRequest(JSONObject object) {
-        if (object == null) return null;
-        try {
-            switch (object.getString("request")) {
-                case "GET":
-                    return buscarCurso(object);
-                case "GET_ALL":
-                    return listarCurso();
-                case "POST":
-                    return insertarCurso(object);
-                case "PUT":
-                    return modificarCurso(object);
-                case "DELETE":
-                    return eliminarCurso(object);
-                default:
-                    return null;
-            }
-        } catch (JSONException e) {
-            return null;
+    private static final CursoModel model = CursoModel.getInstance();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        switch (request.getServletPath()) {
+            case "/cursos":
+                listarCurso(response);
+                break;
+            case "/curso":
+                buscarCurso(request, response);
+                break;
         }
     }
 
-    public JSONObject buscarCurso(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONObject curso = model.buscarCurso(object.getString("codigo"));
-            response.put("request", "GET");
-            response.put("curso", curso);
+            model.insertarCurso(
+                    requestData.getString("codigo"),
+                    requestData.getString("nombre"),
+                    requestData.getInt("creditos"),
+                    requestData.getInt("horasSemanales")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject listarCurso() {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONArray cursos = model.listarCurso();
-            response.put("request", "GET_ALL");
-            response.put("cursos", cursos);
+            model.modificarCurso(
+                    requestData.getString("codigo"),
+                    requestData.getString("nombre"),
+                    requestData.getInt("creditos"),
+                    requestData.getInt("horasSemanales")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject insertarCurso(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.insertarCurso(object.getString("codigo"),
-                    object.getString("nombre"),
-                    object.getInt("creditos"),
-                    object.getInt("horasSemanales"));
-            response.put("response", "CREATED");
+            model.eliminarCurso(requestData.optString("codigo"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject modificarCurso(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void listarCurso(HttpServletResponse response) throws IOException {
+        JSONArray cursos = new JSONArray();
 
         try {
-            model.modificarCurso(object.getString("codigo"),
-                    object.getString("nombre"),
-                    object.getInt("creditos"),
-                    object.getInt("horasSemanales"));
-            response.put("response", "MODIFICATED");
+            cursos = model.listarCurso();
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(cursos));
     }
 
-    public JSONObject eliminarCurso(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void buscarCurso(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject curso = new JSONObject();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.eliminarCurso(object.getString("codigo"));
-            response.put("response", "ELIMINATED");
+            curso = model.buscarCurso(requestData.optString("codigo"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(curso));
     }
 }

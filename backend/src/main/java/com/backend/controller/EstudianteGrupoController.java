@@ -1,135 +1,124 @@
 package com.backend.controller;
 
 import com.backend.model.EstudianteGrupoModel;
-import org.json.JSONException;
+import com.backend.model.UsuarioModel;
 import org.json.JSONObject;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 
-public class EstudianteGrupoController {
-    private static EstudianteGrupoModel model = EstudianteGrupoModel.getInstance();
-    private static EstudianteGrupoController instance = null;
+import static com.backend.utils.requestToJson.getJsonRequest;
 
-    public static EstudianteGrupoController getInstance() {
-        if (instance == null) instance = new EstudianteGrupoController();
-        return instance;
-    }
+@WebServlet(name = "EstudianteGrupoController", urlPatterns = {"/estudiantes-grupo", "/grupos-estudiante"})
+public class EstudianteGrupoController extends HttpServlet {
 
-    public JSONObject processRequest(JSONObject object) {
-        if (object == null) return null;
-        try {
-            switch (object.getString("request")) {
-                case "GET":
-                    return buscarGruposEstudiante(object);
-                case "GET_ALL":
-                    return listarEstudiantesGrupo(object);
-                case "POST":
-                    return matriculaEstudiante(object);
-                case "PUT":
-                    return ingresaNota(object);
-                case "DELETE":
-                    return desmatriculaEstudiante(object);
-                default:
-                    return null;
-            }
-        } catch (JSONException e) {
-            return null;
+    private final static EstudianteGrupoModel model = EstudianteGrupoModel.getInstance();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        switch (request.getServletPath()) {
+            case "/estudiantes-grupo":
+                listarEstudiantesGrupo(request, response);
+                break;
+            case "/grupos-estudiante":
+                buscarGruposEstudiante(request, response);
+                break;
         }
     }
 
-    public JSONObject buscarGruposEstudiante(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONObject grupos = model.buscarGruposEstudiante(object.getString("cedulaEstudiante"));
-            response.put("request", "GET");
-            response.put("grupos", grupos);
+            model.matriculaEstudiante(
+                    requestData.optString("cedulaEstudiante"),
+                    requestData.optInt("numeroGrupo"),
+                    requestData.optString("codigoCurso"),
+                    requestData.optInt("annoCiclo"),
+                    requestData.optInt("numeroCiclo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject listarEstudiantesGrupo(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            JSONObject estudiantes = model.listarEstudiantesGrupo(object.getInt("numeroGrupo"),
-                    object.getString("codigoCurso"),
-                    object.getInt("annoCiclo"),
-                    object.getInt("numeroCiclo"));
-            response.put("request", "GET_ALL");
-            response.put("estudiantes", estudiantes);
+            model.ingresaNota(
+                    requestData.optString("cedulaEstudiante"),
+                    requestData.optInt("numeroGrupo"),
+                    requestData.optString("codigoCurso"),
+                    requestData.optInt("annoCiclo"),
+                    requestData.optInt("numeroCiclo"),
+                    requestData.optFloat("nota")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject matriculaEstudiante(JSONObject object) {
-        JSONObject response = new JSONObject();
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.matriculaEstudiante(object.getString("cedulaEstudiante"),
-                    object.getInt("numeroGrupo"),
-                    object.getString("codigoCurso"),
-                    object.getInt("annoCiclo"),
-                    object.getInt("numeroCiclo"));
-            response.put("response", "ENROLLED");
+            model.desmatriculaEstudiante(
+                    requestData.optString("cedulaEstudiante"),
+                    requestData.optInt("numeroGrupo"),
+                    requestData.optString("codigoCurso")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
-
-        return response;
     }
 
-    public JSONObject ingresaNota(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void listarEstudiantesGrupo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject grupo = new JSONObject();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.ingresaNota(object.getString("cedulaEstudiante"),
-                    object.getInt("numeroGrupo"),
-                    object.getString("codigoCurso"),
-                    object.getInt("annoCiclo"),
-                    object.getInt("numeroCiclo"),
-                    object.getFloat("nota"));
-            response.put("response", "QUALIFIED");
+            grupo = model.listarEstudiantesGrupo(
+                    requestData.optInt("numeroGrupo"),
+                    requestData.optString("codigoCurso"),
+                    requestData.optInt("annoCiclo"),
+                    requestData.optInt("numeroCiclo")
+            );
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(grupo));
     }
 
-    public JSONObject desmatriculaEstudiante(JSONObject object) {
-        JSONObject response = new JSONObject();
+    protected void buscarGruposEstudiante(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONObject gruposEstudiante = new JSONObject();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
 
         try {
-            model.desmatriculaEstudiante(object.getString("cedulaEstudiante"),
-                    object.getInt("annoCiclo"),
-                    object.getString("cedulaEstudiante"));
-            response.put("response", "WITHDRAWN");
+            gruposEstudiante = model.buscarGruposEstudiante(requestData.optString("cedulaEstudiante"));
         } catch (SQLException e) {
-            response.put("response", "ERROR");
-            response.put("message", e.getMessage());
-        } catch (JSONException e) {
-            return null;
+            System.err.println(e.getMessage());
         }
 
-        return response;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(gruposEstudiante));
     }
 }

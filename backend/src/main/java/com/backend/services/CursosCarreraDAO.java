@@ -42,6 +42,18 @@ public class CursosCarreraDAO {
 
     }
 
+    public void modificaCursoCarrera(String carrera, String curso, int anno, int numero) throws SQLException {
+        connection.setAutoCommit(true);
+        CallableStatement stmt = connection.prepareCall(CursosCarreraCRUD.MODIFICARCURSOCARRERA);
+        stmt.setString(1, carrera);
+        stmt.setString(2, curso);
+        stmt.setInt(3, anno);
+        stmt.setInt(4, numero);
+
+        stmt.executeUpdate();
+        stmt.close();
+    }
+
     public JSONObject buscarCurso(String carrera, String codigoCurso) throws SQLException {
 
         JSONObject curso = new JSONObject();
@@ -49,42 +61,44 @@ public class CursosCarreraDAO {
         CallableStatement stmt = connection.prepareCall(CursosCarreraCRUD.BUSCARCURSOCARRERA);
         stmt.registerOutParameter(1, OracleTypes.CURSOR);
         stmt.setString(2, carrera);
+        stmt.setString(3, codigoCurso);
 
         stmt.execute();
 
         ResultSet rs = (ResultSet) stmt.getObject(1);
+        curso.put("carrera", carrera);
         while (rs.next()) {
-            curso.put("codigo", rs.getString("codigo"));
-            curso.put("nombre", rs.getString("nombre"));
-            curso.put("creditos", rs.getInt("creditos"));
-            curso.put("horasSemanales", rs.getInt("horasSemanales"));
+            JSONObject cursoAux = CursoDAO.getInstance().buscarCurso(rs.getString("codigoCurso"));
+            curso.put("codigo", cursoAux.getString("codigo"));
+            curso.put("nombre", cursoAux.getString("nombre"));
+            curso.put("creditos", cursoAux.getInt("creditos"));
+            curso.put("horasSemanales", cursoAux.getInt("horasSemanales"));
         }
         rs.close();
         stmt.close();
         return curso;
     }
 
-    public JSONArray listarCurso(String carrera) throws SQLException {
-
+    public JSONObject listarCurso(String codigoCarrera) throws SQLException {
+        JSONObject carrera = new JSONObject();
         JSONArray cursos = new JSONArray();
+
         connection.setAutoCommit(false);
         CallableStatement stmt = connection.prepareCall(CursosCarreraCRUD.LISTARCURSOCARRERA);
         stmt.registerOutParameter(1, OracleTypes.CURSOR);
-        stmt.setString(2, carrera);
+        stmt.setString(2, codigoCarrera);
         stmt.execute();
 
         ResultSet rs = (ResultSet) stmt.getObject(1);
-
+        carrera.put("carrera", codigoCarrera);
         while (rs.next()) {
-            JSONObject curso = new JSONObject();
-            curso.put("codigo", rs.getString("codigo"));
-            curso.put("nombre", rs.getString("nombre"));
-            curso.put("creditos", rs.getInt("creditos"));
-            curso.put("horasSemanales", rs.getInt("horasSemanales"));
+            JSONObject curso = CursoDAO.getInstance().buscarCurso(rs.getString("codigoCurso"));
+
             cursos.put(curso);
         }
+        carrera.put("cursos", cursos);
         rs.close();
         stmt.close();
-        return cursos;
+        return carrera;
     }
 }
