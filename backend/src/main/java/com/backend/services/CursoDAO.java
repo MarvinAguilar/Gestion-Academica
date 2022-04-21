@@ -18,7 +18,7 @@ public class CursoDAO {
         return instance;
     }
 
-    public void insertarCurso(String codigo, String nombre, int creditos, int horasSemanales) throws SQLException {
+    public void insertarCurso(String codigo, String nombre, int creditos, int horasSemanales, String carrera) throws SQLException {
         connection.setAutoCommit(true);
         CallableStatement stmt = connection.prepareCall(CursoCRUD.INSERTARCURSO);
         stmt.setString(1, codigo);
@@ -27,6 +27,7 @@ public class CursoDAO {
         stmt.setInt(4, horasSemanales);
         stmt.executeUpdate();
         stmt.close();
+        CursosCarreraDAO.getInstance().insertarCursoCarrera(carrera, codigo, 2022, 1);
     }
 
     public void modificarCurso(String codigo, String nombre, int creditos, int horasSemanales) throws SQLException {
@@ -41,12 +42,13 @@ public class CursoDAO {
     }
 
     public void eliminarCurso(String codigo) throws SQLException {
+        JSONObject cursoCarrera = CursosCarreraDAO.getInstance().buscarCursoCarrera(codigo);
+        CursosCarreraDAO.getInstance().eliminarCurso(cursoCarrera.getString("carrera"), codigo);
         connection.setAutoCommit(true);
         CallableStatement stmt = connection.prepareCall(CursoCRUD.ELIMINARCURSO);
         stmt.setString(1, codigo);
         stmt.executeUpdate();
         stmt.close();
-
     }
 
     public JSONObject buscarCurso(String codigo) throws SQLException {
@@ -82,10 +84,13 @@ public class CursoDAO {
 
         while (rs.next()) {
             JSONObject curso = new JSONObject();
+            JSONObject cursoCarrera = CursosCarreraDAO.getInstance().buscarCursoCarrera(rs.getString("codigo"));
+            JSONObject carrera = CarreraDAO.getInstance().buscarCarrera(cursoCarrera.getString("carrera"));
             curso.put("codigo", rs.getString("codigo"));
             curso.put("nombre", rs.getString("nombre"));
             curso.put("creditos", rs.getInt("creditos"));
             curso.put("horasSemanales", rs.getInt("horasSemanales"));
+            curso.put("carrera", carrera.getString("nombre"));
             cursos.put(curso);
         }
         rs.close();

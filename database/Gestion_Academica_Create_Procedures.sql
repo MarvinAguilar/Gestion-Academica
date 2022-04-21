@@ -515,6 +515,18 @@ begin
     return cursosCarreraCursor;
 end;
 /
+create or replace function buscarCursoCarrera(
+    in_codigoCurso in cursosCarrera.codigoCurso%type
+)
+return types.refCursor
+as 
+    cursosCarreraCursor types.refCursor;
+begin 
+    open cursosCarreraCursor for
+        select * from cursosCarrera where codigoCurso = in_codigoCurso;
+    return cursosCarreraCursor;
+end;
+/
 create or replace function listarCursosCarrera(
     in_codigoCarrera in cursosCarrera.codigoCarrera%type
 )

@@ -28,8 +28,8 @@ public class CursoModel {
         return this.dao.buscarCurso(codigo);
     }
 
-    public void insertarCurso(String codigo, String nombre, int creditos, int horasSemanales) throws SQLException {
-        this.dao.insertarCurso(codigo, nombre, creditos, horasSemanales);
+    public void insertarCurso(String codigo, String nombre, int creditos, int horasSemanales, String carrera) throws SQLException {
+        this.dao.insertarCurso(codigo, nombre, creditos, horasSemanales, carrera);
     }
 
     public void modificarCurso(String codigo, String nombre, int creditos, int horasSemanales) throws SQLException {

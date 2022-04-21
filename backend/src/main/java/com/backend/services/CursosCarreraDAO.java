@@ -58,7 +58,7 @@ public class CursosCarreraDAO {
 
         JSONObject curso = new JSONObject();
         connection.setAutoCommit(false);
-        CallableStatement stmt = connection.prepareCall(CursosCarreraCRUD.BUSCARCURSOCARRERA);
+        CallableStatement stmt = connection.prepareCall(CursosCarreraCRUD.BUSCARCURSOSCARRERA);
         stmt.registerOutParameter(1, OracleTypes.CURSOR);
         stmt.setString(2, carrera);
         stmt.setString(3, codigoCurso);
@@ -73,6 +73,26 @@ public class CursosCarreraDAO {
             curso.put("nombre", cursoAux.getString("nombre"));
             curso.put("creditos", cursoAux.getInt("creditos"));
             curso.put("horasSemanales", cursoAux.getInt("horasSemanales"));
+        }
+        rs.close();
+        stmt.close();
+        return curso;
+    }
+
+    public JSONObject buscarCursoCarrera(String codigoCurso) throws SQLException {
+
+        JSONObject curso = new JSONObject();
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(CursosCarreraCRUD.BUSCARCURSOCARRERA);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.setString(2, codigoCurso);
+
+        stmt.execute();
+
+        ResultSet rs = (ResultSet) stmt.getObject(1);
+
+        while (rs.next()) {
+            curso.put("carrera", rs.getString("codigoCarrera"));
         }
         rs.close();
         stmt.close();

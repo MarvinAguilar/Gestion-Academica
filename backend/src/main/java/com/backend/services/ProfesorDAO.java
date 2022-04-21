@@ -27,6 +27,7 @@ public class ProfesorDAO {
         stmt.setString(4, email);
         stmt.executeUpdate();
         stmt.close();
+        UsuarioDAO.getInstance().insertarUsuario(cedula, "12345", 3);
     }
 
     public void modificarProfesor(String cedula, String nombre, String telefono, String email) throws SQLException {
