@@ -27,7 +27,11 @@ const Modal = ({ title, showModal, toggleModal, children }) => {
                   >
                     Atrás
                   </button>
-                  <button type="submit" className="btn btn-primary">
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    form="insertForm"
+                  >
                     Guardar
                   </button>
                 </div>

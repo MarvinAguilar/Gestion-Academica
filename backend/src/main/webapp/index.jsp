@@ -3,10 +3,8 @@
 <html>
 <head>
     <title>JSP - Hello World</title>
-
-
 </head>
 <body>
-<div id="contenedor"></div>
+<h1>Backend Gestión Académica</h1>
 </body>
 </html>

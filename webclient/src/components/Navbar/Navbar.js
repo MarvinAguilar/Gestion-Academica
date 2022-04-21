@@ -1,10 +1,21 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
+import useGlobalContext from "../../hooks/useGlobalContext";
+import { logout } from "../../services/LoginService";
 
 function Navbar() {
+  const { setUser } = useGlobalContext();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout(setUser);
+
+    navigate("/");
+  };
+
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div className="container">
           <NavLink to="/" className="navbar-brand">
             <img
@@ -94,6 +105,9 @@ function Navbar() {
                 </NavLink>
               </li>
             </ul>
+            <button className="btn btn-primary" onClick={handleLogout}>
+              Logout
+            </button>
           </div>
         </div>
       </nav>

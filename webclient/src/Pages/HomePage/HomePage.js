@@ -1,7 +1,10 @@
 import React from "react";
 import logo from "../../assets/logo.png";
+import useGlobalContext from "../../hooks/useGlobalContext";
 
 function HomePage() {
+  const { user } = useGlobalContext();
+
   return (
     <>
       <div className="container">
@@ -14,9 +17,7 @@ function HomePage() {
                 className="d-block mx-auto mb-4"
                 style={{ width: "64px", height: "64px" }}
               />
-              <h1 className="display-6 fw-bold">
-                Bienvenido/a Marvin Aguilar!
-              </h1>
+              <h1 className="display-6 fw-bold">Bienvenido/a {user.nombre}!</h1>
               <div className="col-lg-8 mx-auto">
                 <p className="lead text-secondary">
                   Este es el Sistema de Gestión Académica en este sitio podrás

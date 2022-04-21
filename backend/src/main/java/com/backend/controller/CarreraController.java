@@ -1,18 +1,14 @@
 package com.backend.controller;
 
 import com.backend.model.CarreraModel;
-import org.json.HTTP;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.stream.Collectors;
 
 import static com.backend.utils.requestToJson.getJsonRequest;
 

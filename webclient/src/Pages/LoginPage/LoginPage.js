@@ -1,8 +1,26 @@
-import React from "react";
+import { useState } from "react";
 import logo from "../../assets/logo.png";
+import useGlobalContext from "../../hooks/useGlobalContext";
+import { login } from "../../services/LoginService";
+
 import "./LoginPage.css";
 
 function LoginPage() {
+  const { setUser } = useGlobalContext();
+  const [dataAuth, setDataAuth] = useState({ cedula: "", clave: "" });
+  const [error, setError] = useState({ active: false, message: "" });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const authorized = await login(dataAuth, setUser);
+
+    if (authorized === "No connection to server")
+      setError({ active: true, message: authorized });
+    else if (authorized === "Unauthorized")
+      setError({ active: true, message: "Usuario o Contraseña Incorrectos" });
+  };
+
   return (
     <>
       <div
@@ -33,19 +51,42 @@ function LoginPage() {
                     <p className="lead">Iniciar Sesión</p>
                   </div>
 
-                  <form className="w-75">
+                  <form onSubmit={handleSubmit} className="w-75">
+                    {error.active && (
+                      <div
+                        className="alert alert-danger alert-dismissible fade show"
+                        role="alert"
+                      >
+                        <span>{error.message}</span>
+                        <input
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="alert"
+                          aria-label="Close"
+                          onClick={() => setError({ ...error, active: false })}
+                        ></input>
+                      </div>
+                    )}
                     <div className="mb-4">
                       <input
                         type="text"
                         className="form-control"
                         placeholder="Nombre de Usuario"
+                        onChange={(e) =>
+                          setDataAuth({ ...dataAuth, cedula: e.target.value })
+                        }
+                        value={dataAuth.cedula}
                       />
                     </div>
                     <div className="mb-4">
                       <input
-                        type="text"
+                        type="password"
                         className="form-control"
                         placeholder="Contraseña"
+                        onChange={(e) =>
+                          setDataAuth({ ...dataAuth, clave: e.target.value })
+                        }
+                        value={dataAuth.clave}
                       />
                     </div>
                     <div className="mb-5 form-check">

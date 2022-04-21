@@ -1,7 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 
 const MantenimientoPage = () => {
-  console.log(Outlet);
   return (
     <>
       <div className="container">

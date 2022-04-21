@@ -1,8 +1,18 @@
 import { useState } from "react";
 import Modal from "../../../components/Modal/Modal";
+import { useCarreras } from "../../../hooks/useCarreras";
 
 const MantenimientoCarrerasPage = () => {
   const [showModal, setShowModal] = useState(false);
+  const [query, setQuery] = useState("");
+  const { filterCarreras, insertarCarrera, eliminarCarrera } = useCarreras({
+    query,
+  });
+  const [carrera, setCarrera] = useState({
+    codigo: "",
+    nombre: "",
+    titulo: "",
+  });
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -11,7 +21,17 @@ const MantenimientoCarrerasPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    insertarCarrera(carrera);
+
     toggleModal();
+  };
+
+  const handleQueryChange = (e) => {
+    setQuery(e.target.value);
+  };
+
+  const handleDelete = (codigo) => {
+    eliminarCarrera(codigo);
   };
 
   return (
@@ -19,14 +39,25 @@ const MantenimientoCarrerasPage = () => {
       <div className="card-body">
         <h5 className="card-title">Lista de Carreras</h5>
 
-        <div className="d-flex justify-content-end">
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            onClick={toggleModal}
-          >
-            Insertar Carrera
-          </button>
+        <div className="d-flex justify-content-end align-content-center gap-3">
+          <div>
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              placeholder="Buscar"
+              value={query}
+              onChange={handleQueryChange}
+            />
+          </div>
+          <div>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={toggleModal}
+            >
+              Insertar Carrera
+            </button>
+          </div>
         </div>
 
         <div className="table-responsive mt-3">
@@ -40,17 +71,24 @@ const MantenimientoCarrerasPage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>100</td>
-                <td>Ingenieria en Sistemas de Informacion</td>
-                <td>Bachillerato</td>
-                <td className="text-center">
-                  <button className="btn btn-success btn-sm mx-2">
-                    Editar
-                  </button>
-                  <button className="btn btn-danger btn-sm">Eliminar</button>
-                </td>
-              </tr>
+              {filterCarreras().map((carrera) => (
+                <tr key={carrera.codigo}>
+                  <td>{carrera.codigo}</td>
+                  <td>{carrera.nombre}</td>
+                  <td>{carrera.titulo}</td>
+                  <td className="text-center">
+                    <button className="btn btn-success btn-sm mx-2">
+                      Editar
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleDelete(carrera.codigo)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -62,7 +100,7 @@ const MantenimientoCarrerasPage = () => {
         toggleModal={toggleModal}
       >
         <div className="card-body custom-modal__content-body">
-          <form onSubmit={handleSubmit}>
+          <form id="insertForm" onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="codigo" className="form-label">
                 Código
@@ -72,6 +110,10 @@ const MantenimientoCarrerasPage = () => {
                 id="codigo"
                 className="form-control"
                 name="codigo"
+                value={carrera.codigo}
+                onChange={(e) =>
+                  setCarrera({ ...carrera, codigo: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
@@ -83,17 +125,25 @@ const MantenimientoCarrerasPage = () => {
                 id="nombre"
                 className="form-control"
                 name="nombre"
+                value={carrera.nombre}
+                onChange={(e) =>
+                  setCarrera({ ...carrera, nombre: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="carrera" className="form-label">
-                Carrera
+              <label htmlFor="titulo" className="form-label">
+                Titulo
               </label>
               <input
                 type="text"
-                id="carrera"
+                id="titulo"
                 className="form-control"
-                name="carrera"
+                name="titulo"
+                value={carrera.titulo}
+                onChange={(e) =>
+                  setCarrera({ ...carrera, titulo: e.target.value })
+                }
               />
             </div>
           </form>

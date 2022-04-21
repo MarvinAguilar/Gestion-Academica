@@ -1,19 +1,12 @@
-import { BrowserRouter } from "react-router-dom";
-import Navbar from "./components/Navbar/Navbar";
 import "./App.css";
-import RoutesComponent from "./components/RoutesComponent";
-
-/* import LoginPage from "./Pages/LoginPage/LoginPage"; */
+import { GlobalProvider } from "./Context/GlobalContext";
+import AppWrapper from "./components/AppWrapper";
 
 function App() {
   return (
-    <>
-      {/* <LoginPage /> */}
-      <BrowserRouter>
-        <Navbar />
-        <RoutesComponent />
-      </BrowserRouter>
-    </>
+    <GlobalProvider>
+      <AppWrapper />
+    </GlobalProvider>
   );
 }
 

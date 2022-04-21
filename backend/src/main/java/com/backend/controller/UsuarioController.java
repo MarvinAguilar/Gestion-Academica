@@ -11,6 +11,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import static com.backend.utils.requestToJson.getJsonRequest;
 
@@ -28,25 +29,26 @@ public class UsuarioController extends HttpServlet {
             case "/usuario":
                 buscarUsuario(request, response);
                 break;
-            case "/login":
-                login(request, response);
-                break;
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        JSONObject requestData = getJsonRequest(request);
+        if ("/login".equals(request.getServletPath())) {
+            login(request, response);
+        } else {
+            request.setCharacterEncoding("UTF-8");
+            JSONObject requestData = getJsonRequest(request);
 
-        try {
-            model.insertarUsuario(
-                    requestData.getString("cedula"),
-                    requestData.getString("clave"),
-                    requestData.getInt("perfil")
-            );
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            try {
+                model.insertarUsuario(
+                        requestData.getString("cedula"),
+                        requestData.getString("clave"),
+                        requestData.getInt("perfil")
+                );
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
         }
     }
 
@@ -118,7 +120,7 @@ public class UsuarioController extends HttpServlet {
         try {
             String autorizado = model.login(requestData.optString("cedula"), requestData.optString("clave"));
 
-            if (autorizado != "None") {
+            if (!Objects.equals(autorizado, "None")) {
                 usuarioEncontrado = model.buscarUsuario(requestData.optString("cedula"));
                 int perfil = usuarioEncontrado.optInt("perfil");
 
