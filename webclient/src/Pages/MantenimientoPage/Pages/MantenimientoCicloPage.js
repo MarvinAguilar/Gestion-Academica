@@ -115,7 +115,7 @@ const MantenimientoCiclosPage = () => {
               <label htmlFor="estado" className="form-label">
                 Estado
               </label>
-              <select id="estado" class="form-select" name="estado">
+              <select id="estado" className="form-select" name="estado">
                 <option value="1">Activo</option>
                 <option value="0">Inactivo</option>
               </select>

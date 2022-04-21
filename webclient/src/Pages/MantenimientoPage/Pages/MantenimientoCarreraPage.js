@@ -4,8 +4,14 @@ import { useCarreras } from "../../../hooks/useCarreras";
 
 const MantenimientoCarrerasPage = () => {
   const [showModal, setShowModal] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [query, setQuery] = useState("");
-  const { filterCarreras, insertarCarrera, eliminarCarrera } = useCarreras({
+  const {
+    filterCarreras,
+    insertarCarrera,
+    actualizarCarrera,
+    eliminarCarrera,
+  } = useCarreras({
     query,
   });
   const [carrera, setCarrera] = useState({
@@ -21,13 +27,30 @@ const MantenimientoCarrerasPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    insertarCarrera(carrera);
+    if (!editing) insertarCarrera(carrera);
+    else actualizarCarrera(carrera);
 
     toggleModal();
   };
 
   const handleQueryChange = (e) => {
     setQuery(e.target.value);
+  };
+
+  const handleInsert = () => {
+    setCarrera({
+      codigo: "",
+      nombre: "",
+      titulo: "",
+    });
+    setEditing(false);
+    toggleModal();
+  };
+
+  const handleUpdate = (carrera) => {
+    setCarrera(carrera);
+    setEditing(true);
+    toggleModal();
   };
 
   const handleDelete = (codigo) => {
@@ -53,7 +76,7 @@ const MantenimientoCarrerasPage = () => {
             <button
               type="button"
               className="btn btn-primary btn-sm"
-              onClick={toggleModal}
+              onClick={handleInsert}
             >
               Insertar Carrera
             </button>
@@ -77,7 +100,10 @@ const MantenimientoCarrerasPage = () => {
                   <td>{carrera.nombre}</td>
                   <td>{carrera.titulo}</td>
                   <td className="text-center">
-                    <button className="btn btn-success btn-sm mx-2">
+                    <button
+                      className="btn btn-success btn-sm mx-2"
+                      onClick={() => handleUpdate(carrera)}
+                    >
                       Editar
                     </button>
                     <button
@@ -95,7 +121,7 @@ const MantenimientoCarrerasPage = () => {
       </div>
 
       <Modal
-        title={"Nueva Carrera"}
+        title={!editing ? "Nueva Carrera" : "Actualizar Carrera"}
         showModal={showModal}
         toggleModal={toggleModal}
       >
@@ -114,6 +140,7 @@ const MantenimientoCarrerasPage = () => {
                 onChange={(e) =>
                   setCarrera({ ...carrera, codigo: e.target.value })
                 }
+                disabled={editing}
               />
             </div>
             <div className="mb-3">

@@ -35,6 +35,15 @@ export function useCarreras({ query } = { query: "" }) {
     });
   };
 
+  const actualizarCarrera = async (carrera) => {
+    const url = "http://localhost:8081/gestion-academica/carreras";
+
+    await fetch(url, {
+      method: "PUT",
+      body: JSON.stringify(carrera),
+    });
+  };
+
   const eliminarCarrera = async (codigo) => {
     const url = "http://localhost:8081/gestion-academica/carreras";
 
@@ -44,5 +53,10 @@ export function useCarreras({ query } = { query: "" }) {
     });
   };
 
-  return { filterCarreras, insertarCarrera, eliminarCarrera };
+  return {
+    filterCarreras,
+    insertarCarrera,
+    actualizarCarrera,
+    eliminarCarrera,
+  };
 }

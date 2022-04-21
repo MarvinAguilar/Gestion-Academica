@@ -1,8 +1,22 @@
 import { useState } from "react";
 import Modal from "../../../components/Modal/Modal";
+import { useCursos } from "../../../hooks/useCursos";
 
 function MantenimientoCursoPage() {
   const [showModal, setShowModal] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [query, setQuery] = useState("");
+  const { filterCursos, insertarCurso, actualizarCurso, eliminarCurso } =
+    useCursos({
+      query,
+    });
+  const [curso, setCurso] = useState({
+    codigo: "",
+    nombre: "",
+    creditos: "",
+    horasSemanales: "",
+    carrera: "",
+  });
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -11,7 +25,36 @@ function MantenimientoCursoPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!editing) insertarCurso(curso);
+    else actualizarCurso(curso);
+
     toggleModal();
+  };
+
+  const handleQueryChange = (e) => {
+    setQuery(e.target.value);
+  };
+
+  const handleInsert = () => {
+    setCurso({
+      codigo: "",
+      nombre: "",
+      creditos: "",
+      horasSemanales: "",
+      carrera: "",
+    });
+    setEditing(false);
+    toggleModal();
+  };
+
+  const handleUpdate = (curso) => {
+    setCurso(curso);
+    setEditing(true);
+    toggleModal();
+  };
+
+  const handleDelete = (codigo) => {
+    eliminarCurso(codigo);
   };
 
   return (
@@ -19,14 +62,25 @@ function MantenimientoCursoPage() {
       <div className="card-body">
         <h5 className="card-title">Lista de Cursos</h5>
 
-        <div className="d-flex justify-content-end">
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            onClick={toggleModal}
-          >
-            Insertar Curso
-          </button>
+        <div className="d-flex justify-content-end gap-3">
+          <div>
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              placeholder="Buscar"
+              value={query}
+              onChange={handleQueryChange}
+            />
+          </div>
+          <div>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={handleInsert}
+            >
+              Insertar Curso
+            </button>
+          </div>
         </div>
 
         <div className="table-responsive mt-3">
@@ -42,31 +96,41 @@ function MantenimientoCursoPage() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>200</td>
-                <td>Fundamentos de Informática</td>
-                <td>4</td>
-                <td>11</td>
-                <td>Informática</td>
-                <td className="text-center">
-                  <button className="btn btn-success btn-sm mx-2">
-                    Editar
-                  </button>
-                  <button className="btn btn-danger btn-sm">Eliminar</button>
-                </td>
-              </tr>
+              {filterCursos().map((curso) => (
+                <tr key={curso.codigo}>
+                  <td>{curso.codigo}</td>
+                  <td>{curso.nombre}</td>
+                  <td>{curso.creditos}</td>
+                  <td>{curso.horasSemanales}</td>
+                  <td>{curso.carrera}</td>
+                  <td className="text-center">
+                    <button
+                      className="btn btn-success btn-sm mx-2"
+                      onClick={() => handleUpdate(curso)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleDelete(curso.codigo)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
       <Modal
-        title={"Nuevo Curso"}
+        title={!editing ? "Nuevo Curso" : "Actualizar Curso"}
         showModal={showModal}
         toggleModal={toggleModal}
       >
         <div className="card-body custom-modal__content-body">
-          <form onSubmit={handleSubmit}>
+          <form id="insertForm" onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="codigo" className="form-label">
                 Código
@@ -76,6 +140,9 @@ function MantenimientoCursoPage() {
                 id="codigo"
                 className="form-control"
                 name="codigo"
+                value={curso.codigo}
+                onChange={(e) => setCurso({ ...curso, codigo: e.target.value })}
+                disabled={editing}
               />
             </div>
             <div className="mb-3">
@@ -87,6 +154,8 @@ function MantenimientoCursoPage() {
                 id="nombre"
                 className="form-control"
                 name="nombre"
+                value={curso.nombre}
+                onChange={(e) => setCurso({ ...curso, nombre: e.target.value })}
               />
             </div>
             <div className="mb-3">
@@ -98,6 +167,10 @@ function MantenimientoCursoPage() {
                 id="creditos"
                 className="form-control"
                 name="creditos"
+                value={curso.creditos}
+                onChange={(e) =>
+                  setCurso({ ...curso, creditos: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
@@ -109,6 +182,10 @@ function MantenimientoCursoPage() {
                 id="horasSemanales"
                 className="form-control"
                 name="horasSemanales"
+                value={curso.horasSemanales}
+                onChange={(e) =>
+                  setCurso({ ...curso, horasSemanales: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
@@ -120,6 +197,11 @@ function MantenimientoCursoPage() {
                 id="carrera"
                 className="form-control"
                 name="carrera"
+                value={curso.carrera}
+                onChange={(e) =>
+                  setCurso({ ...curso, carrera: e.target.value })
+                }
+                disabled={editing}
               />
             </div>
           </form>
