@@ -55,8 +55,7 @@ public class EstudianteGrupoDAO {
         stmt.close();
     }
 
-    public JSONObject buscarGruposEstudiante(String cedulaEstudiante) throws SQLException {
-        JSONObject gruposEstudiante = new JSONObject();
+    public JSONArray buscarGruposEstudiante(String cedulaEstudiante) throws SQLException {
         JSONArray grupos = new JSONArray();
 
         connection.setAutoCommit(false);
@@ -66,21 +65,26 @@ public class EstudianteGrupoDAO {
         stmt.execute();
 
         ResultSet rs = (ResultSet) stmt.getObject(1);
-        gruposEstudiante.put("cedulaEstudiante", cedulaEstudiante);
         while (rs.next()) {
             JSONObject grupo = new JSONObject();
-            grupo.put("numeroGrupo", rs.getString("numeroGrupo"));
-            grupo.put("codigoCurso", rs.getString("codigoCurso"));
+            JSONObject curso = CursoDAO.getInstance().buscarCurso(rs.getString("codigoCurso"));
+
+            String nombreCurso = curso.getString("nombre");
+            int creditosCurso = curso.getInt("creditos");
+
+            grupo.put("numeroCiclo", rs.getInt("numeroCiclo"));
             grupo.put("annoCiclo", rs.getString("annoCiclo"));
-            grupo.put("numeroCiclo", rs.getString("numeroCiclo"));
+            grupo.put("codigoCurso", rs.getString("codigoCurso"));
+            grupo.put("nombreCurso", nombreCurso);
+            grupo.put("creditosCurso", creditosCurso);
+            grupo.put("nota", rs.getFloat("nota"));
             grupos.put(grupo);
         }
-        gruposEstudiante.put("grupos", grupos);
 
         rs.close();
         stmt.close();
 
-        return gruposEstudiante;
+        return grupos;
     }
 
     public JSONObject listarEstudiantesGrupo(int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo) throws SQLException {

@@ -23,7 +23,7 @@ public class EstudianteGrupoModel {
         return this.dao.listarEstudiantesGrupo(numeroGrupo, codigoCurso, annoCiclo, numeroCiclo);
     }
 
-    public JSONObject buscarGruposEstudiante(String cedulaEstudiante) throws SQLException {
+    public JSONArray buscarGruposEstudiante(String cedulaEstudiante) throws SQLException {
         return this.dao.buscarGruposEstudiante(cedulaEstudiante);
     }
 

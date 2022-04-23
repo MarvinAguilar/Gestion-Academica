@@ -1,20 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useCallback } from "react";
+import useGlobalContext from "./useGlobalContext";
 
 export function useCarreras({ query } = { query: "" }) {
-  const [carreras, setCarreras] = useState([]);
+  const { carreras, setCarreras } = useGlobalContext();
 
-  const handleGetCarreras = async () => {
+  const handleGetCarreras = useCallback(() => {
     const url = "http://localhost:8081/gestion-academica/carreras";
 
-    await fetch(url)
+    fetch(url)
       .then((data) => data.json())
       .then((res) => setCarreras(res))
       .catch((e) => []);
-  };
+  }, [setCarreras]);
 
   useEffect(() => {
     handleGetCarreras();
-  }, [carreras]);
+  }, [handleGetCarreras]);
 
   const filterCarreras = () => {
     return query !== ""
@@ -32,7 +33,7 @@ export function useCarreras({ query } = { query: "" }) {
     await fetch(url, {
       method: "POST",
       body: JSON.stringify(carrera),
-    });
+    }).then(() => setCarreras([...carreras, carrera]));
   };
 
   const actualizarCarrera = async (carrera) => {
@@ -41,7 +42,7 @@ export function useCarreras({ query } = { query: "" }) {
     await fetch(url, {
       method: "PUT",
       body: JSON.stringify(carrera),
-    });
+    }).then(() => handleGetCarreras());
   };
 
   const eliminarCarrera = async (codigo) => {
@@ -50,10 +51,13 @@ export function useCarreras({ query } = { query: "" }) {
     await fetch(url, {
       method: "DELETE",
       body: JSON.stringify({ codigo }),
-    });
+    }).then(() =>
+      setCarreras(carreras.filter((carrera) => carrera.codigo !== codigo))
+    );
   };
 
   return {
+    carreras,
     filterCarreras,
     insertarCarrera,
     actualizarCarrera,

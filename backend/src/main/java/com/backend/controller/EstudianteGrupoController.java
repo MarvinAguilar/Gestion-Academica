@@ -2,6 +2,7 @@ package com.backend.controller;
 
 import com.backend.model.EstudianteGrupoModel;
 import com.backend.model.UsuarioModel;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.*;
@@ -10,6 +11,7 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 
 import static com.backend.utils.requestToJson.getJsonRequest;
 
@@ -24,27 +26,31 @@ public class EstudianteGrupoController extends HttpServlet {
             case "/estudiantes-grupo":
                 listarEstudiantesGrupo(request, response);
                 break;
-            case "/grupos-estudiante":
-                buscarGruposEstudiante(request, response);
-                break;
+//            case "/grupos-estudiante":
+//                buscarGruposEstudiante(request, response);
+//                break;
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        JSONObject requestData = getJsonRequest(request);
+        if ("/grupos-estudiante".equals(request.getServletPath())) {
+            buscarGruposEstudiante(request, response);
+        } else {
+            request.setCharacterEncoding("UTF-8");
+            JSONObject requestData = getJsonRequest(request);
 
-        try {
-            model.matriculaEstudiante(
-                    requestData.optString("cedulaEstudiante"),
-                    requestData.optInt("numeroGrupo"),
-                    requestData.optString("codigoCurso"),
-                    requestData.optInt("annoCiclo"),
-                    requestData.optInt("numeroCiclo")
-            );
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            try {
+                model.matriculaEstudiante(
+                        requestData.optString("cedulaEstudiante"),
+                        requestData.optInt("numeroGrupo"),
+                        requestData.optString("codigoCurso"),
+                        requestData.optInt("annoCiclo"),
+                        requestData.optInt("numeroCiclo")
+                );
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
         }
     }
 
@@ -106,7 +112,7 @@ public class EstudianteGrupoController extends HttpServlet {
     }
 
     protected void buscarGruposEstudiante(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        JSONObject gruposEstudiante = new JSONObject();
+        JSONArray gruposEstudiante = new JSONArray();
 
         request.setCharacterEncoding("UTF-8");
         JSONObject requestData = getJsonRequest(request);

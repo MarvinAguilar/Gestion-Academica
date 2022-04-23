@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Modal from "../../../components/Modal/Modal";
+import { useCarreras } from "../../../hooks/useCarreras";
 import { useCursos } from "../../../hooks/useCursos";
 
 function MantenimientoCursoPage() {
@@ -17,6 +18,7 @@ function MantenimientoCursoPage() {
     horasSemanales: "",
     carrera: "",
   });
+  const { carreras } = useCarreras();
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -192,17 +194,22 @@ function MantenimientoCursoPage() {
               <label htmlFor="carrera" className="form-label">
                 Carrera
               </label>
-              <input
-                type="text"
+              <select
                 id="carrera"
-                className="form-control"
+                className="form-select"
                 name="carrera"
                 value={curso.carrera}
                 onChange={(e) =>
                   setCurso({ ...curso, carrera: e.target.value })
                 }
                 disabled={editing}
-              />
+              >
+                {carreras.map((carrera) => (
+                  <option key={carrera.codigo} value={carrera.codigo}>
+                    {carrera.codigo} - {carrera.nombre}
+                  </option>
+                ))}
+              </select>
             </div>
           </form>
         </div>

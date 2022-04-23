@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Modal from "../../../components/Modal/Modal";
-import { useProfesor } from "../../../hooks/useProfesores";
+import { useProfesores } from "../../../hooks/useProfesores";
 
 const MantenimientoProfesoresPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -11,7 +11,7 @@ const MantenimientoProfesoresPage = () => {
     insertarProfesor,
     actualizarProfesor,
     eliminarProfesor,
-  } = useProfesor({
+  } = useProfesores({
     query,
   });
   const [profesor, setProfesor] = useState({

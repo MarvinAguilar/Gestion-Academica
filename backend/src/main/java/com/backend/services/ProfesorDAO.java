@@ -47,6 +47,7 @@ public class ProfesorDAO {
         stmt.setString(1, cedula);
         stmt.executeUpdate();
         stmt.close();
+        UsuarioDAO.getInstance().eliminarUsuario(cedula);
     }
 
     public JSONObject buscarProfesor(String cedula) throws SQLException {

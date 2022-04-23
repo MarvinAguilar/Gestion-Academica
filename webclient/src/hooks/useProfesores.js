@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 
-export function useProfesor({ query } = { query: "" }) {
-  const [profesores, setProfesor] = useState([]);
+export function useProfesores({ query } = { query: "" }) {
+  const [profesores, setProfesores] = useState([]);
 
-  const handleGetProfesor = async () => {
+  const handleGetProfesores = async () => {
     const url = "http://localhost:8081/gestion-academica/profesores";
 
     await fetch(url)
       .then((data) => data.json())
-      .then((res) => setProfesor(res))
+      .then((res) => setProfesores(res))
       .catch((e) => []);
   };
 
   useEffect(() => {
-    handleGetProfesor();
-  }, [profesores]);
+    handleGetProfesores();
+  }, [setProfesores]);
 
   const filterProfesores = () => {
     return query !== ""
@@ -32,7 +32,7 @@ export function useProfesor({ query } = { query: "" }) {
     await fetch(url, {
       method: "POST",
       body: JSON.stringify(profesor),
-    });
+    }).then(() => setProfesores([...profesores, profesor]));
   };
 
   const actualizarProfesor = async (profesor) => {
@@ -41,7 +41,7 @@ export function useProfesor({ query } = { query: "" }) {
     await fetch(url, {
       method: "PUT",
       body: JSON.stringify(profesor),
-    });
+    }).then(() => handleGetProfesores());
   };
 
   const eliminarProfesor = async (cedula) => {
@@ -50,7 +50,9 @@ export function useProfesor({ query } = { query: "" }) {
     await fetch(url, {
       method: "DELETE",
       body: JSON.stringify({ cedula }),
-    });
+    }).then(() =>
+      setProfesores(profesores.filter((profesor) => profesor.cedula !== cedula))
+    );
   };
 
   return {

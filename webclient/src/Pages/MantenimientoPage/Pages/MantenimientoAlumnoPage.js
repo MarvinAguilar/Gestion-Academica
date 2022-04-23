@@ -1,8 +1,25 @@
 import { useState } from "react";
 import Modal from "../../../components/Modal/Modal";
+import { useAlumnos } from "../../../hooks/useAlumnos";
+/* import { useCarreras } from "../../../hooks/useCarreras"; */
 
 const MantenimientoAlumnosPage = () => {
   const [showModal, setShowModal] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [query, setQuery] = useState("");
+  const { filterAlumnos, insertarAlumno, actualizarAlumno, eliminarAlumno } =
+    useAlumnos({
+      query,
+    });
+  const [alumno, setAlumno] = useState({
+    cedula: "",
+    nombre: "",
+    telefono: "",
+    email: "",
+    fechaNacimiento: "",
+    carrera: "",
+  });
+  /*   const { carreras } = useCarreras(); */
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -11,7 +28,37 @@ const MantenimientoAlumnosPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!editing) insertarAlumno(alumno);
+    else actualizarAlumno(alumno);
+
     toggleModal();
+  };
+
+  const handleQueryChange = (e) => {
+    setQuery(e.target.value);
+  };
+
+  const handleInsert = () => {
+    setAlumno({
+      cedula: "",
+      nombre: "",
+      telefono: "",
+      email: "",
+      fechaNacimiento: "",
+      carrera: "",
+    });
+    setEditing(false);
+    toggleModal();
+  };
+
+  const handleUpdate = (alumno) => {
+    setAlumno(alumno);
+    setEditing(true);
+    toggleModal();
+  };
+
+  const handleDelete = (cedula) => {
+    eliminarAlumno(cedula);
   };
 
   return (
@@ -19,14 +66,25 @@ const MantenimientoAlumnosPage = () => {
       <div className="card-body">
         <h5 className="card-title">Lista de Alumnos</h5>
 
-        <div className="d-flex justify-content-end">
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            onClick={toggleModal}
-          >
-            Insertar Alumno
-          </button>
+        <div className="d-flex justify-content-end gap-3">
+          <div>
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              placeholder="Buscar"
+              value={query}
+              onChange={handleQueryChange}
+            />
+          </div>
+          <div>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={handleInsert}
+            >
+              Insertar Alumno
+            </button>
+          </div>
         </div>
 
         <div className="table-responsive mt-3">
@@ -43,32 +101,42 @@ const MantenimientoAlumnosPage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>117520958</td>
-                <td>Andres Alvarez</td>
-                <td>87465302</td>
-                <td>andresad@gmail.com</td>
-                <td>23/08/1999</td>
-                <td>Informática</td>
-                <td className="text-center">
-                  <button className="btn btn-success btn-sm mx-2">
-                    Editar
-                  </button>
-                  <button className="btn btn-danger btn-sm">Eliminar</button>
-                </td>
-              </tr>
+              {filterAlumnos().map((alumno) => (
+                <tr key={alumno.cedula}>
+                  <td>{alumno.cedula}</td>
+                  <td>{alumno.nombre}</td>
+                  <td>{alumno.telefono}</td>
+                  <td>{alumno.email}</td>
+                  <td>{alumno.fechaNacimiento}</td>
+                  <td>{alumno.carrera}</td>
+                  <td className="text-center">
+                    <button
+                      className="btn btn-success btn-sm mx-2"
+                      onClick={() => handleUpdate(alumno)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleDelete(alumno.cedula)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
       <Modal
-        title={"Nuevo Alumno"}
+        title={!editing ? "Nuevo Alumno" : "Actualizar Alumno"}
         showModal={showModal}
         toggleModal={toggleModal}
       >
         <div className="card-body custom-modal__content-body">
-          <form onSubmit={handleSubmit}>
+          <form id="insertForm" onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="cedula" className="form-label">
                 Cédula
@@ -78,6 +146,11 @@ const MantenimientoAlumnosPage = () => {
                 id="cedula"
                 className="form-control"
                 name="cedula"
+                value={alumno.cedula}
+                onChange={(e) =>
+                  setAlumno({ ...alumno, cedula: e.target.value })
+                }
+                disabled={editing}
               />
             </div>
             <div className="mb-3">
@@ -89,6 +162,10 @@ const MantenimientoAlumnosPage = () => {
                 id="nombre"
                 className="form-control"
                 name="nombre"
+                value={alumno.nombre}
+                onChange={(e) =>
+                  setAlumno({ ...alumno, nombre: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
@@ -100,6 +177,10 @@ const MantenimientoAlumnosPage = () => {
                 id="telefono"
                 className="form-control"
                 name="telefono"
+                value={alumno.telefono}
+                onChange={(e) =>
+                  setAlumno({ ...alumno, telefono: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
@@ -111,6 +192,10 @@ const MantenimientoAlumnosPage = () => {
                 id="email"
                 className="form-control"
                 name="email"
+                value={alumno.email}
+                onChange={(e) =>
+                  setAlumno({ ...alumno, email: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
@@ -122,6 +207,10 @@ const MantenimientoAlumnosPage = () => {
                 id="fechaNacimiento"
                 className="form-control"
                 name="fechaNacimiento"
+                value={alumno.fechaNacimiento}
+                onChange={(e) =>
+                  setAlumno({ ...alumno, fechaNacimiento: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
@@ -133,6 +222,10 @@ const MantenimientoAlumnosPage = () => {
                 id="carrera"
                 className="form-control"
                 name="carrera"
+                value={alumno.carrera}
+                onChange={(e) =>
+                  setAlumno({ ...alumno, carrera: e.target.value })
+                }
               />
             </div>
           </form>

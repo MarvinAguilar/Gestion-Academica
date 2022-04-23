@@ -1,8 +1,23 @@
 import { useState } from "react";
 import Modal from "../../../components/Modal/Modal";
+import { useCiclos } from "../../../hooks/useCiclos";
 
 const MantenimientoCiclosPage = () => {
   const [showModal, setShowModal] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [query, setQuery] = useState("");
+  const { filterCiclos, insertarCiclo, actualizarCiclo, eliminarCiclo } =
+    useCiclos({
+      query,
+    });
+  const date = new Date();
+  const [ciclo, setCiclo] = useState({
+    anno: date.getFullYear(),
+    numero: "",
+    fechaInicio: "",
+    fechaFinal: "",
+    estado: "",
+  });
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -11,7 +26,36 @@ const MantenimientoCiclosPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!editing) insertarCiclo(ciclo);
+    else actualizarCiclo(ciclo);
+
     toggleModal();
+  };
+
+  const handleQueryChange = (e) => {
+    setQuery(e.target.value);
+  };
+
+  const handleInsert = () => {
+    setCiclo({
+      anno: date.getFullYear(),
+      numero: "",
+      fechaInicio: "",
+      fechaFinal: "",
+      estado: "",
+    });
+    setEditing(false);
+    toggleModal();
+  };
+
+  const handleUpdate = (ciclo) => {
+    setCiclo(ciclo);
+    setEditing(true);
+    toggleModal();
+  };
+
+  const handleDelete = (anno, numero) => {
+    eliminarCiclo(anno, numero);
   };
 
   return (
@@ -19,14 +63,25 @@ const MantenimientoCiclosPage = () => {
       <div className="card-body">
         <h5 className="card-title">Lista de Ciclos</h5>
 
-        <div className="d-flex justify-content-end">
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            onClick={toggleModal}
-          >
-            Insertar Ciclo
-          </button>
+        <div className="d-flex justify-content-end align-content-center gap-3">
+          <div>
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              placeholder="Buscar"
+              value={query}
+              onChange={handleQueryChange}
+            />
+          </div>
+          <div>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={handleInsert}
+            >
+              Insertar Ciclo
+            </button>
+          </div>
         </div>
 
         <div className="table-responsive mt-3">
@@ -42,31 +97,40 @@ const MantenimientoCiclosPage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>2022</td>
-                <td>1</td>
-                <td>25/02/2022</td>
-                <td>17/08/2022</td>
-                <td>Activo</td>
-                <td className="text-center">
-                  <button className="btn btn-success btn-sm mx-2">
-                    Editar
-                  </button>
-                  <button className="btn btn-danger btn-sm">Eliminar</button>
-                </td>
-              </tr>
+              {filterCiclos().map((ciclo, index) => (
+                <tr key={index}>
+                  <td>{ciclo.anno}</td>
+                  <td>{ciclo.numero}</td>
+                  <td>{ciclo.fechaFinal}</td>
+                  <td>{ciclo.estado === 1 ? "Activo" : "Inactivo"}</td>
+                  <td className="text-center">
+                    <button
+                      className="btn btn-success btn-sm mx-2"
+                      onClick={() => handleUpdate(ciclo)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleDelete(ciclo.anno, ciclo.numero)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
       <Modal
-        title={"Nuevo Ciclo"}
+        title={!editing ? "Nueva Ciclo" : "Actualizar Ciclo"}
         showModal={showModal}
         toggleModal={toggleModal}
       >
         <div className="card-body custom-modal__content-body">
-          <form onSubmit={handleSubmit}>
+          <form id="insertForm" onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="anno" className="form-label">
                 Año
@@ -76,6 +140,9 @@ const MantenimientoCiclosPage = () => {
                 id="anno"
                 className="form-control"
                 name="anno"
+                value={ciclo.anno}
+                onChange={(e) => setCiclo({ ...ciclo, anno: e.target.value })}
+                disabled={editing}
               />
             </div>
             <div className="mb-3">
@@ -87,6 +154,9 @@ const MantenimientoCiclosPage = () => {
                 id="numero"
                 className="form-control"
                 name="numero"
+                value={ciclo.numero}
+                onChange={(e) => setCiclo({ ...ciclo, numero: e.target.value })}
+                disabled={editing}
               />
             </div>
             <div className="mb-3">
@@ -98,6 +168,10 @@ const MantenimientoCiclosPage = () => {
                 id="fechaInicio"
                 className="form-control"
                 name="fechaInicio"
+                value={ciclo.fechaInicio}
+                onChange={(e) =>
+                  setCiclo({ ...ciclo, fechaInicio: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
@@ -109,13 +183,23 @@ const MantenimientoCiclosPage = () => {
                 id="email"
                 className="form-control"
                 name="fechaFinal"
+                value={ciclo.fechaFinal}
+                onChange={(e) =>
+                  setCiclo({ ...ciclo, fechaFinal: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
               <label htmlFor="estado" className="form-label">
                 Estado
               </label>
-              <select id="estado" className="form-select" name="estado">
+              <select
+                id="estado"
+                className="form-select"
+                name="estado"
+                value={ciclo.estado}
+                onChange={(e) => setCiclo({ ...ciclo, estado: e.target.value })}
+              >
                 <option value="1">Activo</option>
                 <option value="0">Inactivo</option>
               </select>

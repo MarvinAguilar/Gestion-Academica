@@ -4,7 +4,7 @@ import useGlobalContext from "../../hooks/useGlobalContext";
 import { logout } from "../../services/LoginService";
 
 function Navbar() {
-  const { setUser } = useGlobalContext();
+  const { user, setUser } = useGlobalContext();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -49,61 +49,71 @@ function Navbar() {
                   Inicio
                 </NavLink>
               </li>
-              <li className="nav-item">
-                <NavLink
-                  to="/mantenimiento"
-                  className={({ isActive }) =>
-                    "nav-link" + (isActive ? " active" : "")
-                  }
-                  aria-current="page"
-                >
-                  Mantenimiento
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink
-                  to="/oferta-academica"
-                  className={({ isActive }) =>
-                    "nav-link" + (isActive ? " active" : "")
-                  }
-                  aria-current="page"
-                >
-                  Oferta Académica
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink
-                  to="/matricula"
-                  className={({ isActive }) =>
-                    "nav-link" + (isActive ? " active" : "")
-                  }
-                  aria-current="page"
-                >
-                  Matrícula
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink
-                  to="/registro-notas"
-                  className={({ isActive }) =>
-                    "nav-link" + (isActive ? " active" : "")
-                  }
-                  aria-current="page"
-                >
-                  Registro de Notas
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink
-                  to="/historial-academico"
-                  className={({ isActive }) =>
-                    "nav-link" + (isActive ? " active" : "")
-                  }
-                  aria-current="page"
-                >
-                  Historial Académico
-                </NavLink>
-              </li>
+              {user?.perfil === 1 && (
+                <>
+                  <li className="nav-item">
+                    <NavLink
+                      to="/mantenimiento"
+                      className={({ isActive }) =>
+                        "nav-link" + (isActive ? " active" : "")
+                      }
+                      aria-current="page"
+                    >
+                      Mantenimiento
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to="/oferta-academica"
+                      className={({ isActive }) =>
+                        "nav-link" + (isActive ? " active" : "")
+                      }
+                      aria-current="page"
+                    >
+                      Oferta Académica
+                    </NavLink>
+                  </li>
+                </>
+              )}
+              {(user?.perfil === 1 || user?.perfil === 2) && (
+                <li className="nav-item">
+                  <NavLink
+                    to="/matricula"
+                    className={({ isActive }) =>
+                      "nav-link" + (isActive ? " active" : "")
+                    }
+                    aria-current="page"
+                  >
+                    Matrícula
+                  </NavLink>
+                </li>
+              )}
+              {user?.perfil === 3 && (
+                <li className="nav-item">
+                  <NavLink
+                    to="/registro-notas"
+                    className={({ isActive }) =>
+                      "nav-link" + (isActive ? " active" : "")
+                    }
+                    aria-current="page"
+                  >
+                    Registro de Notas
+                  </NavLink>
+                </li>
+              )}
+              {user?.perfil === 4 && (
+                <li className="nav-item">
+                  <NavLink
+                    to="/historial-academico"
+                    className={({ isActive }) =>
+                      "nav-link" + (isActive ? " active" : "")
+                    }
+                    aria-current="page"
+                  >
+                    Historial Académico
+                  </NavLink>
+                </li>
+              )}
             </ul>
             <button className="btn btn-primary" onClick={handleLogout}>
               Logout

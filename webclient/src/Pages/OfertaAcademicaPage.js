@@ -1,7 +1,11 @@
 import { useState } from "react";
 import Modal from "../components/Modal/Modal";
+import { useCarreras } from "../hooks/useCarreras";
+import { useCiclos } from "../hooks/useCiclos";
 
 const OfertaAcademicaPage = () => {
+  const { carreras } = useCarreras();
+  const { ciclos } = useCiclos();
   const [filter, setFilter] = useState({
     carrera: "",
     ciclo: "",
@@ -24,7 +28,7 @@ const OfertaAcademicaPage = () => {
     <>
       <div className="container">
         <div className="row gap-2">
-          <div className="col-sm-12 col-md-6 col-lg-3">
+          <div className="col-sm-12 col-md-6 col-lg-4">
             <label htmlFor="selectCarrera" className="form-label">
               Carrera
             </label>
@@ -38,7 +42,11 @@ const OfertaAcademicaPage = () => {
               }
             >
               <option value=""></option>
-              <option value="1">Informática</option>
+              {carreras.map((carrera) => (
+                <option key={carrera.codigo} value={carrera.codigo}>
+                  {carrera.codigo} - {carrera.nombre}
+                </option>
+              ))}
             </select>
           </div>
           <div className="col-sm-12 col-md-4 col-lg-2">
@@ -53,10 +61,15 @@ const OfertaAcademicaPage = () => {
               onChange={(e) => setFilter({ ...filter, ciclo: e.target.value })}
             >
               <option value=""></option>
-              <option value="1">II - Ciclo</option>
+              {ciclos.map((ciclo, index) => (
+                <option key={index} value={ciclo.anno}>
+                  {(ciclo.numero === 1 && "I") || (ciclo.numero === 2 && "II")}{" "}
+                  - Ciclo {ciclo.anno}
+                </option>
+              ))}
             </select>
           </div>
-          <div className="col-sm-12 col-md-6 col-lg-3">
+          <div className="col-sm-12 col-md-6 col-lg-4">
             <label htmlFor="selectCurso" className="form-label">
               Curso
             </label>
@@ -64,11 +77,9 @@ const OfertaAcademicaPage = () => {
               id="selectCurso"
               className="form-select"
               name="curso"
-              defaultValue=""
               disabled={!filter.carrera || !filter.ciclo}
             >
               <option value=""></option>
-              <option value="1">Fundamentos de Informática</option>
             </select>
           </div>
         </div>
@@ -98,21 +109,7 @@ const OfertaAcademicaPage = () => {
                   <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>8 a.m.</td>
-                  <td>Luis López</td>
-                  <td>Fundamentos Informática</td>
-                  <td>I-2022</td>
-                  <td className="text-center">
-                    <button className="btn btn-success btn-sm mx-2">
-                      Editar
-                    </button>
-                    <button className="btn btn-danger btn-sm">Eliminar</button>
-                  </td>
-                </tr>
-              </tbody>
+              <tbody></tbody>
             </table>
           </div>
         </div>
