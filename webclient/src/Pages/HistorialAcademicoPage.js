@@ -1,9 +1,6 @@
-import useGlobalContext from "../hooks/useGlobalContext";
 import { useHistorialAcademico } from "../hooks/useHistorialAcademico";
 
-const HistorialAcademicoPage = () => {
-  const { user } = useGlobalContext();
-  const cedulaEstudiante = user.cedula;
+const HistorialAcademicoPage = ({ cedulaEstudiante, nombreEstudiante }) => {
   const { groupHistorialAcademico } = useHistorialAcademico({
     cedulaEstudiante,
   });
@@ -15,7 +12,7 @@ const HistorialAcademicoPage = () => {
           <div className="d-flex justify-content-between align-content-center">
             <h5 className="card-title">Historial Académico</h5>
             <p>
-              <b>Estudiante:</b> {user.nombre}
+              <b>Estudiante:</b> {nombreEstudiante}
             </p>
           </div>
 

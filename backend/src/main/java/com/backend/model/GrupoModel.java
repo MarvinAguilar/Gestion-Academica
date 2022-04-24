@@ -29,6 +29,10 @@ public class GrupoModel {
         return this.dao.listarGrupoCarrera(codigoCarrera, annoCiclo, numeroCiclo);
     }
 
+    public JSONArray listarGrupoProfesor(String cedulaProfesor) throws SQLException {
+        return this.dao.listarGrupoCarrera(cedulaProfesor);
+    }
+
     public JSONObject buscarGrupo(int numero, String cedulaProfesor, String codigoCurso, int annoCiclo, int numeroCiclo) throws SQLException {
         return this.dao.buscarGrupo(numero, cedulaProfesor, codigoCurso, annoCiclo, numeroCiclo);
     }

@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 import static com.backend.utils.requestToJson.getJsonRequest;
 
-@WebServlet(name = "GrupoController", urlPatterns = {"/grupos", "/grupo", "/grupos-carrera"})
+@WebServlet(name = "GrupoController", urlPatterns = {"/grupos", "/grupo", "/grupos-carrera", "/grupos-profesor"})
 public class GrupoController extends HttpServlet {
 
     private static final GrupoModel model = GrupoModel.getInstance();
@@ -34,6 +34,9 @@ public class GrupoController extends HttpServlet {
                 break;
             case "/grupos-carrera":
                 listarGrupoCarrera(request, response);
+                break;
+            case "/grupos-profesor":
+                listarGrupoProfesor(request, response);
                 break;
             default:
                 request.setCharacterEncoding("UTF-8");
@@ -116,6 +119,23 @@ public class GrupoController extends HttpServlet {
 
         try {
             grupos = model.listarGrupoCarrera(requestData.optString("codigoCarrera"), requestData.optInt("annoCiclo"), requestData.optInt("numeroCiclo"));
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(grupos));
+    }
+
+    protected void listarGrupoProfesor(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONArray grupos = new JSONArray();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
+        try {
+            grupos = model.listarGrupoProfesor(requestData.optString("cedulaProfesor"));
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }

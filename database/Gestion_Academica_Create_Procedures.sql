@@ -392,6 +392,21 @@ begin
 end;
 /
 
+create or replace function listarGrupoProfesor(
+    in_cedulaProfesor in grupo.codigoCurso%type
+)
+return types.refCursor
+as
+    grupoCursor types.refCursor;
+begin
+    open grupoCursor for
+        select g.numero as numeroGrupo, g.codigocurso as codigoCurso, g.annociclo as annoCiclo, g.numerociclo as numeroCiclo, cu.nombre as nombreCurso
+        from grupo g, ciclo c, curso cu
+        where g.cedulaprofesor = in_cedulaProfesor and c.estado = 'A' and g.annociclo = c.anno and g.numeroCiclo = c.numero and cu.codigo = g.codigoCurso;
+    return grupoCursor;
+end;
+/
+
 create or replace function listarGrupoCarrera(
     in_codigoCarrera in grupo.codigoCurso%type,
     in_annoCiclo in grupo.annoCiclo%type,
@@ -642,18 +657,20 @@ begin
     return estudianteGrupoCursor;
 end;
 /
+
 create or replace function listarEstudiantesGrupo(
     in_numeroGrupo in estudiantesGrupo.numeroGrupo%type,
-    in_codigoCurso in estudiantesGrupo.codigoCurso%type,
-    in_annoCiclo in estudiantesGrupo.annoCiclo%type, 
-    in_numeroCiclo in estudiantesGrupo.numeroCiclo%type
+    in_codigoCurso in estudiantesGrupo.codigoCurso%type
 )
 return types.refCursor
 as
     estudianteGrupoCursor types.refCursor;
 begin
     open estudianteGrupoCursor for
-        select * from estudiantesGrupo where numeroGrupo = in_numeroGrupo and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+        select a.cedula as cedulaEstudiante, a.nombre as nombreEstudiante, ca.nombre as carreraEstudiante, c.nombre as nombreCurso, eg.numeroGrupo as numeroGrupo, eg.nota as nota
+        from estudiantesGrupo eg, alumno a, curso c, carrera ca, ciclo ci
+        where eg.numeroGrupo = in_numeroGrupo and eg.codigoCurso = in_codigoCurso and ci.estado = 'A' and eg.annoCiclo = ci.anno and eg.numeroCiclo = ci.numero and
+        a.cedula = eg.cedulaestudiante and ca.codigo = a.carrera and c.codigo = in_codigoCurso;
     return estudianteGrupoCursor;
 end;
 /

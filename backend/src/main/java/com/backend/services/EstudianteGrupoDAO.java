@@ -87,8 +87,7 @@ public class EstudianteGrupoDAO {
         return grupos;
     }
 
-    public JSONObject listarEstudiantesGrupo(int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo) throws SQLException {
-        JSONObject grupo = new JSONObject();
+    public JSONArray listarEstudiantesGrupo(int numeroGrupo, String codigoCurso) throws SQLException {
         JSONArray estudiantes = new JSONArray();
 
         connection.setAutoCommit(false);
@@ -96,24 +95,26 @@ public class EstudianteGrupoDAO {
         stmt.registerOutParameter(1, OracleTypes.CURSOR);
         stmt.setInt(2, numeroGrupo);
         stmt.setString(3, codigoCurso);
-        stmt.setInt(4, annoCiclo);
-        stmt.setInt(5, numeroCiclo);
         stmt.execute();
 
         ResultSet rs = (ResultSet) stmt.getObject(1);
-        grupo.put("numeroGrupo", numeroGrupo);
-        grupo.put("codigoCurso", codigoCurso);
-        grupo.put("annoCiclo", annoCiclo);
-        grupo.put("numeroCiclo", numeroCiclo);
         while (rs.next()) {
-            JSONObject estudiante = AlumnoDAO.getInstance().buscarAlumno(rs.getString("cedulaEstudiante"));
+
+            JSONObject estudiante = new JSONObject();
+            estudiante.put("cedulaEstudiante", rs.getString("cedulaEstudiante"));
+            estudiante.put("nombreEstudiante", rs.getString("nombreEstudiante"));
+            estudiante.put("carreraEstudiante", rs.getString("carreraEstudiante"));
+            estudiante.put("nombreCurso", rs.getString("nombreCurso"));
+            estudiante.put("numeroGrupo", rs.getInt("numeroGrupo"));
+            estudiante.put("nota", rs.getString("nota"));
             estudiantes.put(estudiante);
         }
-        grupo.put("estudiantes", estudiantes);
 
         rs.close();
         stmt.close();
 
-        return grupo;
+        return estudiantes;
     }
+
+
 }

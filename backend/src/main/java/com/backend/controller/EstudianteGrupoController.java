@@ -22,20 +22,15 @@ public class EstudianteGrupoController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        switch (request.getServletPath()) {
-            case "/estudiantes-grupo":
-                listarEstudiantesGrupo(request, response);
-                break;
-//            case "/grupos-estudiante":
-//                buscarGruposEstudiante(request, response);
-//                break;
-        }
+
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if ("/grupos-estudiante".equals(request.getServletPath())) {
             buscarGruposEstudiante(request, response);
+        } else if ("/estudiantes-grupo".equals(request.getServletPath())) {
+            listarEstudiantesGrupo(request, response);
         } else {
             request.setCharacterEncoding("UTF-8");
             JSONObject requestData = getJsonRequest(request);
@@ -90,7 +85,7 @@ public class EstudianteGrupoController extends HttpServlet {
     }
 
     protected void listarEstudiantesGrupo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        JSONObject grupo = new JSONObject();
+        JSONArray grupo = new JSONArray();
 
         request.setCharacterEncoding("UTF-8");
         JSONObject requestData = getJsonRequest(request);
@@ -98,9 +93,7 @@ public class EstudianteGrupoController extends HttpServlet {
         try {
             grupo = model.listarEstudiantesGrupo(
                     requestData.optInt("numeroGrupo"),
-                    requestData.optString("codigoCurso"),
-                    requestData.optInt("annoCiclo"),
-                    requestData.optInt("numeroCiclo")
+                    requestData.optString("codigoCurso")
             );
         } catch (SQLException e) {
             System.err.println(e.getMessage());

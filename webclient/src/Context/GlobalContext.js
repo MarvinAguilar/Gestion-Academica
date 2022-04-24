@@ -9,6 +9,10 @@ export const GlobalProvider = ({ children }) => {
   const [cursos, setCursos] = useState([]);
   const [ciclos, setCiclos] = useState([]);
   const [grupos, setGrupos] = useState([]);
+  const [historialEstudiante, setHistorialEstudiante] = useState({
+    cedula: "",
+    nombre: "",
+  });
 
   const formatDate = (date) =>
     `${date.substring(8)}/${date.substring(5, 7)}/${date.substring(0, 4)}`;
@@ -24,6 +28,8 @@ export const GlobalProvider = ({ children }) => {
     setCiclos,
     grupos,
     setGrupos,
+    historialEstudiante,
+    setHistorialEstudiante,
     formatDate,
   };
 

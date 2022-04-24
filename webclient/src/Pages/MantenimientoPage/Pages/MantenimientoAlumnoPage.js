@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Modal from "../../../components/Modal/Modal";
 import { useAlumnos } from "../../../hooks/useAlumnos";
 import { useCarreras } from "../../../hooks/useCarreras";
 import useGlobalContext from "../../../hooks/useGlobalContext";
 
 const MantenimientoAlumnosPage = () => {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(false);
   const [query, setQuery] = useState("");
@@ -22,7 +24,7 @@ const MantenimientoAlumnosPage = () => {
     nombreCarrera: "",
   });
   const { carreras } = useCarreras();
-  const { formatDate } = useGlobalContext();
+  const { setHistorialEstudiante, formatDate } = useGlobalContext();
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -63,6 +65,11 @@ const MantenimientoAlumnosPage = () => {
 
   const handleDelete = (cedula) => {
     eliminarAlumno(cedula);
+  };
+
+  const handleVerHistorial = (alumno) => {
+    setHistorialEstudiante(alumno);
+    navigate("/historial-academico");
   };
 
   return (
@@ -117,7 +124,7 @@ const MantenimientoAlumnosPage = () => {
                   <td className="text-center">
                     <button
                       className="btn btn-danger btn-sm m-4"
-                      onClick={() => console.log("Ver Historial")}
+                      onClick={() => handleVerHistorial(alumno)}
                     >
                       Ver Historial
                     </button>

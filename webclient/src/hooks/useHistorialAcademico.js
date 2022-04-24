@@ -1,25 +1,25 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useHistorialAcademico(
   { cedulaEstudiante } = { cedulaEstudiante: "" }
 ) {
   const [historialAcademico, setHistorialAcademico] = useState([]);
 
-  const handleGetHistorialAcademico = async () => {
+  const handleGetHistorialAcademico = useCallback(() => {
     const url = "http://localhost:8081/gestion-academica/grupos-estudiante";
 
-    await fetch(url, {
+    fetch(url, {
       method: "POST",
-      body: JSON.stringify({ cedulaEstudiante: "117520958" }),
+      body: JSON.stringify({ cedulaEstudiante }),
     })
       .then((data) => data.json())
       .then((res) => setHistorialAcademico(res))
       .catch((e) => []);
-  };
+  }, [cedulaEstudiante]);
 
   useEffect(() => {
     handleGetHistorialAcademico();
-  }, [setHistorialAcademico]);
+  }, [handleGetHistorialAcademico]);
 
   const groupHistorialAcademico = () => {
     const cursos = new Map();

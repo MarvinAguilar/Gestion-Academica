@@ -19,8 +19,8 @@ public class EstudianteGrupoModel {
         return instance;
     }
 
-    public JSONObject listarEstudiantesGrupo(int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo) throws SQLException {
-        return this.dao.listarEstudiantesGrupo(numeroGrupo, codigoCurso, annoCiclo, numeroCiclo);
+    public JSONArray listarEstudiantesGrupo(int numeroGrupo, String codigoCurso) throws SQLException {
+        return this.dao.listarEstudiantesGrupo(numeroGrupo, codigoCurso);
     }
 
     public JSONArray buscarGruposEstudiante(String cedulaEstudiante) throws SQLException {

@@ -11,8 +11,10 @@ import MantenimientoCursoPage from "../Pages/MantenimientoPage/Pages/Mantenimien
 import MantenimientoProfesorPage from "../Pages/MantenimientoPage/Pages/MantenimientoProfesorPage";
 import MantenimientoAlumnoPage from "../Pages/MantenimientoPage/Pages/MantenimientoAlumnoPage";
 import MantenimientoCicloPage from "../Pages/MantenimientoPage/Pages/MantenimientoCicloPage";
+import useGlobalContext from "../hooks/useGlobalContext";
 
 const RoutesComponent = () => {
+  const { user, historialEstudiante } = useGlobalContext();
   return (
     <>
       <Routes>
@@ -29,7 +31,20 @@ const RoutesComponent = () => {
         <Route path="/registro-notas" element={<RegistroNotasPage />} />
         <Route
           path="/historial-academico"
-          element={<HistorialAcademicoPage />}
+          element={
+            (user.perfil === 1 && (
+              <HistorialAcademicoPage
+                cedulaEstudiante={historialEstudiante.cedula}
+                nombreEstudiante={historialEstudiante.nombre}
+              />
+            )) ||
+            (user.perfil === 4 && (
+              <HistorialAcademicoPage
+                cedulaEstudiante={user.cedula}
+                nombreEstudiante={user.nombre}
+              />
+            ))
+          }
         />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

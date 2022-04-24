@@ -144,4 +144,30 @@ public class GrupoDAO {
 
         return grupos;
     }
+
+    public JSONArray listarGrupoCarrera(String cedulaProfesor) throws SQLException {
+        JSONArray grupos = new JSONArray();
+
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(GrupoCRUD.LISTARGRUPOPROFESOR);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.setString(2, cedulaProfesor);
+        stmt.execute();
+
+        ResultSet rs = (ResultSet) stmt.getObject(1);
+        while (rs.next()) {
+            JSONObject grupo = new JSONObject();
+            grupo.put("numeroGrupo", rs.getInt("numeroGrupo"));
+            grupo.put("codigoCurso", rs.getString("codigoCurso"));
+            grupo.put("annoCiclo", rs.getInt("annoCiclo"));
+            grupo.put("numeroCiclo", rs.getInt("numeroCiclo"));
+            grupo.put("nombreCurso", rs.getString("nombreCurso"));
+            grupos.put(grupo);
+        }
+        rs.close();
+        stmt.close();
+
+        return grupos;
+    }
+
 }

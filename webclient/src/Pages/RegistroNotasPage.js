@@ -1,13 +1,14 @@
 import { useState } from "react";
 import Modal from "../components/Modal/Modal";
+import { useRegistraNota } from "../hooks/useRegistraNota";
 
 const RegistroNotasPage = () => {
-  const [filter, setFilter] = useState({
-    curso: "",
-    grupo: "",
-  });
-
   const [showModal, setShowModal] = useState(false);
+  const [query, setQuery] = useState({
+    numeroGrupo: "",
+    codigoCurso: "",
+  });
+  const { grupos, estudiantes } = useRegistraNota({ query });
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -19,25 +20,16 @@ const RegistroNotasPage = () => {
     toggleModal();
   };
 
+  const handleChangeGrupo = (e) => {
+    const grupo = e.target.value.split("-");
+    const [numeroGrupo, codigoCurso] = grupo;
+    setQuery({ ...query, numeroGrupo: numeroGrupo, codigoCurso: codigoCurso });
+  };
+
   return (
     <>
       <div className="container">
         <div className="row gap-2">
-          <div className="col-sm-12 col-md-6 col-lg-3">
-            <label htmlFor="selectCurso" className="form-label">
-              Curso
-            </label>
-            <select
-              id="selectCurso"
-              className="form-select"
-              name="curso"
-              value={filter.ciclo}
-              onChange={(e) => setFilter({ ...filter, curso: e.target.value })}
-            >
-              <option value=""></option>
-              <option value="1">Fundamentos</option>
-            </select>
-          </div>
           <div className="col-sm-12 col-md-6 col-lg-3">
             <label htmlFor="selectGrupo" className="form-label">
               Grupo
@@ -46,12 +38,16 @@ const RegistroNotasPage = () => {
               id="selectGrupo"
               className="form-select"
               name="grupo"
-              value={filter.ciclo}
-              onChange={(e) => setFilter({ ...filter, grupo: e.target.value })}
-              disabled={!filter.curso}
+              value={`${query.numeroGrupo}-${query.codigoCurso}`}
+              onChange={handleChangeGrupo}
             >
               <option value=""></option>
-              <option value="1">Fundamentos</option>
+              {grupos.map((grupo) => (
+                <option
+                  key={`${grupo.numeroGrupo}-${grupo.codigoCurso}`}
+                  value={`${grupo.numeroGrupo}-${grupo.codigoCurso}`}
+                >{`${grupo.numeroGrupo}- ${grupo.codigoCurso}:${grupo.nombreCurso}`}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -73,22 +69,24 @@ const RegistroNotasPage = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>116830152</td>
-                  <td>Marvin Aguilar Fuentes</td>
-                  <td>Ing. Sistemas</td>
-                  <td>Móviles</td>
-                  <td>1</td>
-                  <td>0</td>
-                  <td className="text-center">
-                    <button
-                      className="btn btn-success btn-sm"
-                      onClick={toggleModal}
-                    >
-                      Ingresar Nota
-                    </button>
-                  </td>
-                </tr>
+                {estudiantes.map((estudiante) => (
+                  <tr key={estudiante.cedulaEstudiante}>
+                    <td>{estudiante.cedulaEstudiante}</td>
+                    <td>{estudiante.nombreEstudiante}</td>
+                    <td>{estudiante.carreraEstudiante}</td>
+                    <td>{estudiante.nombreCurso}</td>
+                    <td>{estudiante.numeroGrupo}</td>
+                    <td>{estudiante.nota}</td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-success btn-sm"
+                        onClick={toggleModal}
+                      >
+                        Ingresar Nota
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
