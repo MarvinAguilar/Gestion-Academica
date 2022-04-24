@@ -64,6 +64,17 @@ function Navbar() {
                   </li>
                   <li className="nav-item">
                     <NavLink
+                      to="/seguridad"
+                      className={({ isActive }) =>
+                        "nav-link" + (isActive ? " active" : "")
+                      }
+                      aria-current="page"
+                    >
+                      Seguridad
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
                       to="/oferta-academica"
                       className={({ isActive }) =>
                         "nav-link" + (isActive ? " active" : "")

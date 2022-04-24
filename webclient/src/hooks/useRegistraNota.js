@@ -42,8 +42,18 @@ export function useRegistraNota({ query } = { query: "" }) {
     handleGetEstudiantesGrupo();
   }, [handleGetEstudiantesGrupo]);
 
+  const ingresaNota = async (calificacion) => {
+    const url = "http://localhost:8081/gestion-academica/grupos-estudiante";
+
+    await fetch(url, {
+      method: "PUT",
+      body: JSON.stringify(calificacion),
+    }).then(() => handleGetEstudiantesGrupo());
+  };
+
   return {
     grupos,
     estudiantes,
+    ingresaNota,
   };
 }

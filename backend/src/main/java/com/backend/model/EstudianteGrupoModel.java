@@ -31,8 +31,8 @@ public class EstudianteGrupoModel {
         this.dao.matriculaEstudiante(cedulaEstudiante, numeroGrupo, codigoCurso, annoCiclo, numeroCiclo);
     }
 
-    public void ingresaNota(String cedulaEstudiante, int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo, Float nota) throws SQLException {
-        this.dao.ingresaNota(cedulaEstudiante, numeroGrupo, codigoCurso, annoCiclo, numeroCiclo, nota);
+    public void ingresaNota(String cedulaEstudiante, int numeroGrupo, String codigoCurso, Float nota) throws SQLException {
+        this.dao.ingresaNota(cedulaEstudiante, numeroGrupo, codigoCurso, nota);
     }
 
     public void desmatriculaEstudiante(String cedulaEstudiante, int numeroGrupo, String codigoCurso) throws SQLException {

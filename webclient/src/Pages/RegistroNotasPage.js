@@ -8,7 +8,13 @@ const RegistroNotasPage = () => {
     numeroGrupo: "",
     codigoCurso: "",
   });
-  const { grupos, estudiantes } = useRegistraNota({ query });
+  const [calificacion, setCalificacion] = useState({
+    cedulaEstudiante: "",
+    numeroGrupo: "",
+    codigoCurso: "",
+    nota: "",
+  });
+  const { grupos, estudiantes, ingresaNota } = useRegistraNota({ query });
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -17,6 +23,8 @@ const RegistroNotasPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    ingresaNota(calificacion);
+
     toggleModal();
   };
 
@@ -24,6 +32,18 @@ const RegistroNotasPage = () => {
     const grupo = e.target.value.split("-");
     const [numeroGrupo, codigoCurso] = grupo;
     setQuery({ ...query, numeroGrupo: numeroGrupo, codigoCurso: codigoCurso });
+  };
+
+  const handleIngresaNota = (estudiante) => {
+    const { cedulaEstudiante, numeroGrupo, nota } = estudiante;
+    const { codigoCurso } = query;
+    setCalificacion({
+      cedulaEstudiante,
+      numeroGrupo,
+      codigoCurso,
+      nota,
+    });
+    toggleModal();
   };
 
   return (
@@ -80,7 +100,7 @@ const RegistroNotasPage = () => {
                     <td className="text-center">
                       <button
                         className="btn btn-success btn-sm"
-                        onClick={toggleModal}
+                        onClick={() => handleIngresaNota(estudiante)}
                       >
                         Ingresar Nota
                       </button>
@@ -99,7 +119,7 @@ const RegistroNotasPage = () => {
         toggleModal={toggleModal}
       >
         <div className="card-body custom-modal__content-body">
-          <form onSubmit={handleSubmit}>
+          <form id="insertForm" onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="cedula" className="form-label">
                 Cédula del Estudiante
@@ -109,18 +129,7 @@ const RegistroNotasPage = () => {
                 id="cedula"
                 className="form-control"
                 name="cedula"
-                disabled
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="nombre" className="form-label">
-                Nombre del Estudiante
-              </label>
-              <input
-                type="text"
-                id="nombre"
-                className="form-control"
-                name="nombre"
+                value={calificacion.cedulaEstudiante}
                 disabled
               />
             </div>
@@ -133,6 +142,10 @@ const RegistroNotasPage = () => {
                 id="nota"
                 className="form-control"
                 name="nota"
+                value={calificacion.nota}
+                onChange={(e) =>
+                  setCalificacion({ ...calificacion, nota: e.target.value })
+                }
               />
             </div>
           </form>

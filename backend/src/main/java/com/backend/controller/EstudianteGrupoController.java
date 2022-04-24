@@ -59,8 +59,6 @@ public class EstudianteGrupoController extends HttpServlet {
                     requestData.optString("cedulaEstudiante"),
                     requestData.optInt("numeroGrupo"),
                     requestData.optString("codigoCurso"),
-                    requestData.optInt("annoCiclo"),
-                    requestData.optInt("numeroCiclo"),
                     requestData.optFloat("nota")
             );
         } catch (SQLException e) {

@@ -12,6 +12,7 @@ import MantenimientoProfesorPage from "../Pages/MantenimientoPage/Pages/Mantenim
 import MantenimientoAlumnoPage from "../Pages/MantenimientoPage/Pages/MantenimientoAlumnoPage";
 import MantenimientoCicloPage from "../Pages/MantenimientoPage/Pages/MantenimientoCicloPage";
 import useGlobalContext from "../hooks/useGlobalContext";
+import SeguridadPage from "../Pages/SeguridadPage";
 
 const RoutesComponent = () => {
   const { user, historialEstudiante } = useGlobalContext();
@@ -26,6 +27,7 @@ const RoutesComponent = () => {
           <Route path="alumnos" element={<MantenimientoAlumnoPage />} />
           <Route path="ciclos" element={<MantenimientoCicloPage />} />
         </Route>
+        <Route path="/seguridad" element={<SeguridadPage />} />
         <Route path="/oferta-academica" element={<OfertaAcademicaPage />} />
         <Route path="/matricula" element={<MatriculaPage />} />
         <Route path="/registro-notas" element={<RegistroNotasPage />} />

@@ -26,7 +26,10 @@ const UserNavbar = () => {
             <div className="d-flex justify-content-end gap-3">
               <div>
                 <span className="fw-bold">Usuario: </span>
-                <span>{user.nombre}</span>
+                <span>
+                  {((user.perfil === 1 || user.perfil === 2) && user.cedula) ||
+                    user.nombre}
+                </span>
               </div>
               <div>
                 <span className="fw-bold">Perfil: </span>

@@ -32,15 +32,13 @@ public class EstudianteGrupoDAO {
     }
 
 
-    public void ingresaNota(String cedulaEstudiante, int numeroGrupo, String codigoCurso, int annoCiclo, int numeroCiclo, Float nota) throws SQLException {
+    public void ingresaNota(String cedulaEstudiante, int numeroGrupo, String codigoCurso, Float nota) throws SQLException {
         connection.setAutoCommit(true);
         CallableStatement stmt = connection.prepareCall(EstudianteGrupoCRUD.INGRESANOTA);
         stmt.setString(1, cedulaEstudiante);
         stmt.setInt(2, numeroGrupo);
         stmt.setString(3, codigoCurso);
-        stmt.setInt(4, annoCiclo);
-        stmt.setInt(5, numeroCiclo);
-        stmt.setFloat(6, nota);
+        stmt.setFloat(4, nota);
         stmt.executeUpdate();
         stmt.close();
     }

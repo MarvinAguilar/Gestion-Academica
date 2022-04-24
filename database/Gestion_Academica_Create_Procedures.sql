@@ -476,7 +476,7 @@ as
     usuarioCursor types.refCursor;
 begin
     open usuarioCursor for
-        select * from usuario;
+        select * from usuario where perfil = 1 or perfil = 2;
     return usuarioCursor;
 end;
 /
@@ -623,14 +623,14 @@ create or replace procedure spIngresaNota(
     in_cedulaEstudiante in estudiantesGrupo.cedulaEstudiante%type, 
     in_numeroGrupo in estudiantesGrupo.numeroGrupo%type,
     in_codigoCurso in estudiantesGrupo.codigoCurso%type,
-    in_annoCiclo in estudiantesGrupo.annoCiclo%type, 
-    in_numeroCiclo in estudiantesGrupo.numeroCiclo%type,
     in_nota in estudiantesGrupo.nota%type
 )
 as
 begin
-    update estudiantesGrupo set nota = in_nota
-        where cedulaEstudiante = in_cedulaEstudiante and numeroGrupo = in_numeroGrupo and codigoCurso = in_codigoCurso and annoCiclo = in_annoCiclo and numeroCiclo = in_numeroCiclo;
+    update estudiantesGrupo eg set nota = in_nota
+        where EXISTS(select * from ciclo c where c.estado = 'A' and eg.annoCiclo = c.anno and eg.numeroCiclo = c.numero) 
+        and eg.cedulaEstudiante = in_cedulaEstudiante and eg.numeroGrupo = in_numeroGrupo and 
+        eg.codigoCurso = in_codigoCurso;
 end;
 /
 --DELETE
