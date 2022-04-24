@@ -27,6 +27,10 @@ public class CursosCarreraModel {
         return this.dao.buscarCurso(carrera, codigoCurso);
     }
 
+    public JSONArray listarCursoCarreraCiclo(String codigoCarrera, int annoCiclo, int numeroCiclo) throws SQLException{
+        return this.dao.listarCursoCarreraCiclo(codigoCarrera, annoCiclo, numeroCiclo);
+    }
+
     public void insertarCursosCarrera(String carrera, String curso, int anno, int numeroCiclo) throws SQLException {
         this.dao.insertarCursoCarrera(carrera, curso, anno, numeroCiclo);
     }

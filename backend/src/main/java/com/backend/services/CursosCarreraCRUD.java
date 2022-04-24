@@ -8,5 +8,6 @@ public class CursosCarreraCRUD {
     protected static final String BUSCARCURSOSCARRERA = "{?=call buscarCursosCarrera(?, ?)}";
     protected static final String BUSCARCURSOCARRERA = "{?=call buscarCursoCarrera(?)}";
     protected static final String LISTARCURSOCARRERA = "{?=call listarCursosCarrera(?)}";
+    protected static final String LISTARCURSOCARRERACICLO = "{? = call listarCursosCarreraCiclo(?, ?, ?)}";
 
 }

@@ -16,7 +16,8 @@ function MantenimientoCursoPage() {
     nombre: "",
     creditos: "",
     horasSemanales: "",
-    carrera: "",
+    codigoCarrera: "",
+    nombreCarrera: "",
   });
   const { carreras } = useCarreras();
 
@@ -43,7 +44,8 @@ function MantenimientoCursoPage() {
       nombre: "",
       creditos: "",
       horasSemanales: "",
-      carrera: "",
+      codigoCarrera: "",
+      nombreCarrera: "",
     });
     setEditing(false);
     toggleModal();
@@ -99,15 +101,15 @@ function MantenimientoCursoPage() {
             </thead>
             <tbody>
               {filterCursos().map((curso) => (
-                <tr key={curso.codigo}>
+                <tr key={`${curso.codigo}-${curso.codigoCarrera}`}>
                   <td>{curso.codigo}</td>
                   <td>{curso.nombre}</td>
                   <td>{curso.creditos}</td>
                   <td>{curso.horasSemanales}</td>
-                  <td>{curso.carrera}</td>
+                  <td>{curso.nombreCarrera}</td>
                   <td className="text-center">
                     <button
-                      className="btn btn-success btn-sm mx-2"
+                      className="btn btn-success btn-sm m-2"
                       onClick={() => handleUpdate(curso)}
                     >
                       Editar
@@ -198,15 +200,21 @@ function MantenimientoCursoPage() {
                 id="carrera"
                 className="form-select"
                 name="carrera"
-                value={curso.carrera}
-                onChange={(e) =>
-                  setCurso({ ...curso, carrera: e.target.value })
-                }
+                value={curso.codigoCarrera}
+                onChange={(e) => {
+                  let index = e.target.selectedIndex;
+                  setCurso({
+                    ...curso,
+                    codigoCarrera: e.target.value,
+                    nombreCarrera: e.target.options[index].text,
+                  });
+                }}
                 disabled={editing}
               >
+                <option value=""></option>
                 {carreras.map((carrera) => (
                   <option key={carrera.codigo} value={carrera.codigo}>
-                    {carrera.codigo} - {carrera.nombre}
+                    {carrera.nombre}
                   </option>
                 ))}
               </select>

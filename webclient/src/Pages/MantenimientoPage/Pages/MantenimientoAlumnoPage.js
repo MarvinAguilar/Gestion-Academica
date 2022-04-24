@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Modal from "../../../components/Modal/Modal";
 import { useAlumnos } from "../../../hooks/useAlumnos";
-/* import { useCarreras } from "../../../hooks/useCarreras"; */
+import { useCarreras } from "../../../hooks/useCarreras";
+import useGlobalContext from "../../../hooks/useGlobalContext";
 
 const MantenimientoAlumnosPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -17,9 +18,11 @@ const MantenimientoAlumnosPage = () => {
     telefono: "",
     email: "",
     fechaNacimiento: "",
-    carrera: "",
+    codigoCarrera: "",
+    nombreCarrera: "",
   });
-  /*   const { carreras } = useCarreras(); */
+  const { carreras } = useCarreras();
+  const { formatDate } = useGlobalContext();
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -45,7 +48,8 @@ const MantenimientoAlumnosPage = () => {
       telefono: "",
       email: "",
       fechaNacimiento: "",
-      carrera: "",
+      codigoCarrera: "",
+      nombreCarrera: "",
     });
     setEditing(false);
     toggleModal();
@@ -97,6 +101,7 @@ const MantenimientoAlumnosPage = () => {
                 <th>Email</th>
                 <th>Fecha de Nacimiento</th>
                 <th>Carrera</th>
+                <th>Historial Académico</th>
                 <th></th>
               </tr>
             </thead>
@@ -107,11 +112,19 @@ const MantenimientoAlumnosPage = () => {
                   <td>{alumno.nombre}</td>
                   <td>{alumno.telefono}</td>
                   <td>{alumno.email}</td>
-                  <td>{alumno.fechaNacimiento}</td>
-                  <td>{alumno.carrera}</td>
+                  <td>{formatDate(alumno.fechaNacimiento)}</td>
+                  <td>{alumno.nombreCarrera}</td>
                   <td className="text-center">
                     <button
-                      className="btn btn-success btn-sm mx-2"
+                      className="btn btn-danger btn-sm m-4"
+                      onClick={() => console.log("Ver Historial")}
+                    >
+                      Ver Historial
+                    </button>
+                  </td>
+                  <td className="text-center">
+                    <button
+                      className="btn btn-success btn-sm m-2"
                       onClick={() => handleUpdate(alumno)}
                     >
                       Editar
@@ -203,7 +216,7 @@ const MantenimientoAlumnosPage = () => {
                 Fecha de Nacimiento
               </label>
               <input
-                type="text"
+                type="date"
                 id="fechaNacimiento"
                 className="form-control"
                 name="fechaNacimiento"
@@ -217,16 +230,27 @@ const MantenimientoAlumnosPage = () => {
               <label htmlFor="carrera" className="form-label">
                 Carrera
               </label>
-              <input
-                type="text"
+              <select
                 id="carrera"
-                className="form-control"
+                className="form-select"
                 name="carrera"
-                value={alumno.carrera}
-                onChange={(e) =>
-                  setAlumno({ ...alumno, carrera: e.target.value })
-                }
-              />
+                value={alumno.codigoCarrera}
+                onChange={(e) => {
+                  let index = e.target.selectedIndex;
+                  setAlumno({
+                    ...alumno,
+                    codigoCarrera: e.target.value,
+                    nombreCarrera: e.target.options[index].text,
+                  });
+                }}
+              >
+                <option value=""></option>
+                {carreras.map((carrera) => (
+                  <option key={carrera.codigo} value={carrera.codigo}>
+                    {carrera.nombre}
+                  </option>
+                ))}
+              </select>
             </div>
           </form>
         </div>

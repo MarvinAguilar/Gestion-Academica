@@ -15,26 +15,26 @@ public class CicloDAO {
         return instance;
     }
 
-    public void insertarCiclo(int anno, int numero, String fechaInicio, String fechaFinal, int estado) throws SQLException {
+    public void insertarCiclo(int anno, int numero, String fechaInicio, String fechaFinal, String estado) throws SQLException {
         connection.setAutoCommit(true);
         CallableStatement stmt = connection.prepareCall(CicloCRUD.INSERTARCICLO);
         stmt.setInt(1, anno);
         stmt.setInt(2, numero);
         stmt.setDate(3, Date.valueOf(fechaInicio));
         stmt.setDate(4, Date.valueOf(fechaFinal));
-        stmt.setInt(5, estado);
+        stmt.setString(5, estado);
         stmt.executeUpdate();
         stmt.close();
     }
 
-    public void modificarCiclo(int anno, int numero, String fechaInicio, String fechaFinal, int estado) throws SQLException {
+    public void modificarCiclo(int anno, int numero, String fechaInicio, String fechaFinal, String estado) throws SQLException {
         connection.setAutoCommit(true);
         CallableStatement stmt = connection.prepareCall(CicloCRUD.MODIFICARCICLO);
         stmt.setInt(1, anno);
         stmt.setInt(2, numero);
         stmt.setDate(3, Date.valueOf(fechaInicio));
         stmt.setDate(4, Date.valueOf(fechaFinal));
-        stmt.setInt(5, estado);
+        stmt.setString(5, estado);
         stmt.executeUpdate();
         stmt.close();
     }
@@ -66,7 +66,7 @@ public class CicloDAO {
             ciclo.put("numero", rs.getInt("numero"));
             ciclo.put("fechaInicio", rs.getDate("fechaInicio").toString());
             ciclo.put("fechaFinal", rs.getDate("fechaFinal").toString());
-            ciclo.put("estado", rs.getInt("estado"));
+            ciclo.put("estado", rs.getString("estado"));
         }
         rs.close();
         stmt.close();
@@ -89,7 +89,7 @@ public class CicloDAO {
             ciclo.put("numero", rs.getInt("numero"));
             ciclo.put("fechaInicio", rs.getDate("fechaInicio").toString());
             ciclo.put("fechaFinal", rs.getDate("fechaFinal").toString());
-            ciclo.put("estado", rs.getInt("estado"));
+            ciclo.put("estado", rs.getString("estado"));
             ciclos.put(ciclo);
         }
         rs.close();

@@ -49,10 +49,13 @@ create table ciclo(
     numero int,
     fechaInicio date,
     fechaFinal date,
-    estado int,
+    estado varchar(1),
     constraint pkCiclo primary key (anno, numero),
-    constraint checkCiclo check (
+    constraint checkCicloNumero check (
         numero between 1 and 2
+    )
+    constraint checkCicloEstado check (
+        estado = 'A' or estado = 'I'
     )
 );
 

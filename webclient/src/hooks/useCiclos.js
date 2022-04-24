@@ -20,7 +20,7 @@ export function useCiclos({ query } = { query: "" }) {
   const filterCiclos = () => {
     return query !== ""
       ? ciclos.filter((ciclo) =>
-          ciclo.anno.toString().toLowerCase().includes(query.toLowerCase())
+          ciclo.anno?.toString().toLowerCase().includes(query.toLowerCase())
         )
       : ciclos;
   };
@@ -43,26 +43,10 @@ export function useCiclos({ query } = { query: "" }) {
     }).then(() => handleGetCiclos());
   };
 
-  const eliminarCiclo = async (anno, numero) => {
-    const url = "http://localhost:8081/gestion-academica/ciclos";
-
-    await fetch(url, {
-      method: "DELETE",
-      body: JSON.stringify({ anno, numero }),
-    }).then(() =>
-      setCiclos(
-        ciclos.filter(
-          (ciclo) => ciclo.codigo !== anno && ciclo.numero !== numero
-        )
-      )
-    );
-  };
-
   return {
     ciclos,
     filterCiclos,
     insertarCiclo,
     actualizarCiclo,
-    eliminarCiclo,
   };
 }

@@ -101,7 +101,7 @@ const MantenimientoCarrerasPage = () => {
                   <td>{carrera.titulo}</td>
                   <td className="text-center">
                     <button
-                      className="btn btn-success btn-sm mx-2"
+                      className="btn btn-success btn-sm m-2"
                       onClick={() => handleUpdate(carrera)}
                     >
                       Editar

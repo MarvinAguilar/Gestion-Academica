@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 import static com.backend.utils.requestToJson.getJsonRequest;
 
-@WebServlet(name = "GrupoController", urlPatterns = {"/grupos", "/grupo"})
+@WebServlet(name = "GrupoController", urlPatterns = {"/grupos", "/grupo", "/grupos-carrera"})
 public class GrupoController extends HttpServlet {
 
     private static final GrupoModel model = GrupoModel.getInstance();
@@ -20,9 +20,6 @@ public class GrupoController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         switch (request.getServletPath()) {
-            case "/grupos":
-                listarGrupo(response);
-                break;
             case "/grupo":
                 buscarGrupo(request, response);
                 break;
@@ -31,21 +28,32 @@ public class GrupoController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        JSONObject requestData = getJsonRequest(request);
+        switch (request.getServletPath()) {
+            case "/grupos":
+                listarGrupo(request, response);
+                break;
+            case "/grupos-carrera":
+                listarGrupoCarrera(request, response);
+                break;
+            default:
+                request.setCharacterEncoding("UTF-8");
+                JSONObject requestData = getJsonRequest(request);
 
-        try {
-            model.insertarGrupo(
-                    requestData.getInt("numero"),
-                    requestData.getString("horario"),
-                    requestData.getString("cedulaProfesor"),
-                    requestData.getString("codigoCurso"),
-                    requestData.getInt("annoCiclo"),
-                    requestData.getInt("numeroCiclo")
-            );
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
+                try {
+                    model.insertarGrupo(
+                            requestData.getInt("numero"),
+                            requestData.getString("horario"),
+                            requestData.getString("cedulaProfesor"),
+                            requestData.getString("codigoCurso"),
+                            requestData.getInt("annoCiclo"),
+                            requestData.getInt("numeroCiclo")
+                    );
+                } catch (SQLException e) {
+                    System.err.println(e.getMessage());
+                }
+                break;
         }
+
     }
 
     @Override
@@ -83,11 +91,31 @@ public class GrupoController extends HttpServlet {
         }
     }
 
-    protected void listarGrupo(HttpServletResponse response) throws IOException {
+    protected void listarGrupo(HttpServletRequest request, HttpServletResponse response) throws IOException {
         JSONArray grupos = new JSONArray();
 
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
         try {
-            grupos = model.listarGrupo();
+            grupos = model.listarGrupo(requestData.optString("codigoCurso"), requestData.optInt("annoCiclo"), requestData.optInt("numeroCiclo"));
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(grupos));
+    }
+
+    protected void listarGrupoCarrera(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONArray grupos = new JSONArray();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
+        try {
+            grupos = model.listarGrupoCarrera(requestData.optString("codigoCarrera"), requestData.optInt("annoCiclo"), requestData.optInt("numeroCiclo"));
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }

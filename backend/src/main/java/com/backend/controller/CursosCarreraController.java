@@ -12,13 +12,18 @@ import java.sql.SQLException;
 
 import static com.backend.utils.requestToJson.getJsonRequest;
 
-@WebServlet(name = "CursosCarreraController", urlPatterns = {"/curso-carreras", "/curso-carrera"})
+@WebServlet(name = "CursosCarreraController", urlPatterns = {"/curso-carreras", "/curso-carrera", "/curso-carrera-ciclo"})
 public class CursosCarreraController extends HttpServlet {
 
     private final static CursosCarreraModel model = CursosCarreraModel.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         switch (request.getServletPath()) {
             case "/curso-carreras":
                 listarCurso(request, response);
@@ -26,23 +31,24 @@ public class CursosCarreraController extends HttpServlet {
             case "/curso-carrera":
                 buscarCursos(request, response);
                 break;
-        }
-    }
+            case "/curso-carrera-ciclo":
+                listarCursoCarreraCiclo(request, response);
+                break;
+            default:
+                request.setCharacterEncoding("UTF-8");
+                JSONObject requestData = getJsonRequest(request);
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        JSONObject requestData = getJsonRequest(request);
-
-        try {
-            model.insertarCursosCarrera(
-                    requestData.optString("codigoCarrera"),
-                    requestData.optString("codigoCurso"),
-                    requestData.optInt("annoCiclo"),
-                    requestData.optInt("numeroCiclo")
-            );
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
+                try {
+                    model.insertarCursosCarrera(
+                            requestData.optString("codigoCarrera"),
+                            requestData.optString("codigoCurso"),
+                            requestData.optInt("annoCiclo"),
+                            requestData.optInt("numeroCiclo")
+                    );
+                } catch (SQLException e) {
+                    System.err.println(e.getMessage());
+                }
+                break;
         }
     }
 
@@ -107,6 +113,25 @@ public class CursosCarreraController extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(String.valueOf(curso));
+    }
+
+    protected void listarCursoCarreraCiclo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        JSONArray cursos = new JSONArray();
+
+        request.setCharacterEncoding("UTF-8");
+        JSONObject requestData = getJsonRequest(request);
+
+        try {
+            cursos = model.listarCursoCarreraCiclo(requestData.optString("codigoCarrera"),
+                    requestData.optInt("annoCiclo"),
+                    requestData.optInt("numeroCiclo"));
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.valueOf(cursos));
     }
 
 }

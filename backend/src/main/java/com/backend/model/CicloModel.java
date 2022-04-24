@@ -28,11 +28,11 @@ public class CicloModel {
         return this.dao.buscarCiclo(anno, numero);
     }
 
-    public void insertarCiclo(int anno, int numero, String fechaInicio, String fechaFinal, int estado) throws SQLException {
+    public void insertarCiclo(int anno, int numero, String fechaInicio, String fechaFinal, String estado) throws SQLException {
         this.dao.insertarCiclo(anno, numero, fechaInicio, fechaFinal, estado);
     }
 
-    public void modificarCiclo(int anno, int numero, String fechaInicio, String fechaFinal, int estado) throws SQLException {
+    public void modificarCiclo(int anno, int numero, String fechaInicio, String fechaFinal, String estado) throws SQLException {
         this.dao.modificarCiclo(anno, numero, fechaInicio, fechaFinal, estado);
     }
 

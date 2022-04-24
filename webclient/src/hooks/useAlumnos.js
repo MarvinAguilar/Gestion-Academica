@@ -20,11 +20,25 @@ export function useAlumnos({ query } = { query: "" }) {
     return query !== ""
       ? alumnos.filter(
           (alumno) =>
-            alumno.cedula.toLowerCase().includes(query.toLowerCase()) ||
-            alumno.nombre.toLowerCase().includes(query.toLowerCase()) ||
-            alumno.carrera.toLowerCase().includes(query.toLowerCase())
+            alumno.cedula?.toLowerCase().includes(query.toLowerCase()) ||
+            alumno.nombre?.toLowerCase().includes(query.toLowerCase()) ||
+            alumno.nombreCarrera?.toLowerCase().includes(query.toLowerCase())
         )
       : alumnos;
+  };
+
+  const buscarAlumno = async (cedula) => {
+    const url = "http://localhost:8081/gestion-academica/alumno";
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({ cedula }),
+    })
+      .then((data) => data.json())
+      .then((res) => res)
+      .catch((e) => {});
+
+    return response;
   };
 
   const insertarAlumno = async (alumno) => {
@@ -58,6 +72,7 @@ export function useAlumnos({ query } = { query: "" }) {
 
   return {
     filterAlumnos,
+    buscarAlumno,
     insertarAlumno,
     actualizarAlumno,
     eliminarAlumno,

@@ -30,6 +30,7 @@ public class AlumnoDAO {
         stmt.setString(6, carrera);
         stmt.executeUpdate();
         stmt.close();
+        UsuarioDAO.getInstance().insertarUsuario(cedula, "12345", 4);
     }
 
     public void modificarAlumno(String cedula, String nombre, String telefono, String email, String fechaNacimiento, String carrera) throws SQLException {
@@ -94,7 +95,8 @@ public class AlumnoDAO {
             alumno.put("telefono", rs.getString("telefono"));
             alumno.put("email", rs.getString("email"));
             alumno.put("fechaNacimiento", rs.getDate("fechaNacimiento").toString());
-            alumno.put("carrera", rs.getString("carrera"));
+            alumno.put("codigoCarrera", rs.getString("codigoCarrera"));
+            alumno.put("nombreCarrera", rs.getString("nombreCarrera"));
             alumnos.put(alumno);
         }
         rs.close();

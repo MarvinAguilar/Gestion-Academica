@@ -83,12 +83,15 @@ public class GrupoDAO {
         return grupo;
     }
 
-    public JSONArray listarGrupo() throws SQLException {
+    public JSONArray listarGrupo(String codigoCurso, int annoCiclo, int numeroCiclo) throws SQLException {
         JSONArray grupos = new JSONArray();
 
         connection.setAutoCommit(false);
         CallableStatement stmt = connection.prepareCall(GrupoCRUD.LISTARGRUPO);
         stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.setString(2, codigoCurso);
+        stmt.setInt(3, annoCiclo);
+        stmt.setInt(4, numeroCiclo);
         stmt.execute();
 
         ResultSet rs = (ResultSet) stmt.getObject(1);
@@ -97,7 +100,41 @@ public class GrupoDAO {
             grupo.put("numero", rs.getInt("numero"));
             grupo.put("horario", rs.getString("horario"));
             grupo.put("cedulaProfesor", rs.getString("cedulaProfesor"));
+            grupo.put("nombreProfesor", rs.getString("nombreProfesor"));
             grupo.put("codigoCurso", rs.getString("codigoCurso"));
+            grupo.put("nombreCurso", rs.getString("nombreCurso"));
+            grupo.put("annoCiclo", rs.getInt("annoCiclo"));
+            grupo.put("numeroCiclo", rs.getInt("numeroCiclo"));
+            grupos.put(grupo);
+        }
+        rs.close();
+        stmt.close();
+
+        return grupos;
+    }
+
+    public JSONArray listarGrupoCarrera(String codigoCarrera, int annoCiclo, int numeroCiclo) throws SQLException {
+        JSONArray grupos = new JSONArray();
+
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(GrupoCRUD.LISTARGRUPOCARRERA);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.setString(2, codigoCarrera);
+        stmt.setInt(3, annoCiclo);
+        stmt.setInt(4, numeroCiclo);
+        stmt.execute();
+
+        ResultSet rs = (ResultSet) stmt.getObject(1);
+        while (rs.next()) {
+            JSONObject grupo = new JSONObject();
+            grupo.put("numeroGrupo", rs.getInt("numeroGrupo"));
+            grupo.put("horario", rs.getString("horario"));
+            grupo.put("creditos", rs.getInt("creditos"));
+            grupo.put("horasSemanales", rs.getInt("horasSemanales"));
+            grupo.put("cedulaProfesor", rs.getString("cedulaProfesor"));
+            grupo.put("nombreProfesor", rs.getString("nombreProfesor"));
+            grupo.put("codigoCurso", rs.getString("codigoCurso"));
+            grupo.put("nombreCurso", rs.getString("nombreCurso"));
             grupo.put("annoCiclo", rs.getInt("annoCiclo"));
             grupo.put("numeroCiclo", rs.getInt("numeroCiclo"));
             grupos.put(grupo);

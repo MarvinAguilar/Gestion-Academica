@@ -116,7 +116,7 @@ as
     cursoCursor types.refCursor;
 begin
     open cursoCursor for
-        select * from curso;
+        select curso.*, carrera.codigo as codigoCarrera, carrera.nombre as nombreCarrera from ((cursoscarrera inner join curso on curso.codigo = cursoscarrera.codigocurso) inner join carrera on carrera.codigo = cursoscarrera.codigocarrera);
     return cursoCursor;
 end;
 /
@@ -241,7 +241,7 @@ as
     alumnoCursor types.refCursor;
 begin
     open alumnoCursor for
-        select * from alumno;
+        select alumno.*, carrera.codigo as codigoCarrera, carrera.nombre as nombreCarrera from alumno inner join carrera on carrera.codigo = alumno.carrera;
     return alumnoCursor;
 end;
 /
@@ -271,6 +271,11 @@ create or replace procedure spModificarCiclo(
 )
 as
 begin
+
+    if in_estado = 'A' then
+        update ciclo set estado = 'I'
+        where estado = 'A';
+    end if;
     update ciclo set fechaInicio = in_fechaInicio, fechaFinal = in_fechaFinal, estado = in_estado
         where anno = in_anno and numero = in_numero;
 end;
@@ -370,13 +375,36 @@ begin
     return grupoCursor;
 end;
 /
-create or replace function listarGrupo
+create or replace function listarGrupo(
+    in_codigoCurso in grupo.codigoCurso%type,
+    in_annoCiclo in grupo.annoCiclo%type,
+    in_numeroCiclo in grupo.numeroCiclo%type
+)
 return types.refCursor
 as
     grupoCursor types.refCursor;
 begin
     open grupoCursor for
-        select * from grupo;
+        select g.numero, g.horario, g.annoCiclo, g.numeroCiclo, p.cedula as cedulaProfesor, p.nombre as nombreProfesor, c.codigo as codigoCurso, c.nombre as nombreCurso
+        from grupo g, profesor p, curso c 
+        where in_codigoCurso = codigoCurso and in_annoCiclo = annoCiclo and in_numeroCiclo = numeroCiclo and p.cedula = g.cedulaprofesor and c.codigo = g.codigocurso;
+    return grupoCursor;
+end;
+/
+
+create or replace function listarGrupoCarrera(
+    in_codigoCarrera in grupo.codigoCurso%type,
+    in_annoCiclo in grupo.annoCiclo%type,
+    in_numeroCiclo in grupo.numeroCiclo%type
+)
+return types.refCursor
+as
+    grupoCursor types.refCursor;
+begin
+    open grupoCursor for
+        select g.numero, g.horario, g.annoCiclo, g.numeroCiclo, c.creditos, c.horasSemanales, p.cedula as cedulaProfesor, p.nombre as nombreProfesor, c.codigo as codigoCurso, c.nombre as nombreCurso
+        from grupo g, profesor p, curso c, cursoscarrera cc
+        where in_codigoCarrera = cc.codigocarrera and g.codigocurso = cc.codigocurso and in_annoCiclo = g.annoCiclo and in_numeroCiclo = g.numeroCiclo and p.cedula = g.cedulaprofesor and c.codigo = g.codigocurso;
     return grupoCursor;
 end;
 /
@@ -536,6 +564,25 @@ as
 begin
     open cursosCarreraCursor for
         select * from cursosCarrera where codigoCarrera = in_codigoCarrera;
+    return cursosCarreraCursor;
+end;
+/
+
+create or replace function listarCursosCarreraCiclo(
+    in_codigoCarrera in cursosCarrera.codigoCarrera%type,
+    in_annoCiclo in cursosCarrera.annociclo%type,
+    in_numeroCiclo in cursoscarrera.numerociclo%type
+)
+return types.refCursor
+as
+    cursosCarreraCursor types.refCursor;
+begin
+    open cursosCarreraCursor for
+        select c.codigo as codigoCurso, c.nombre as nombreCurso from curso c, cursoscarrera cc where
+        in_codigoCarrera = cc.codigocarrera and 
+        in_annoCiclo = cc.annociclo and 
+        in_numerociclo = cc.numerociclo and 
+        c.codigo = cc.codigocurso;
     return cursosCarreraCursor;
 end;
 /

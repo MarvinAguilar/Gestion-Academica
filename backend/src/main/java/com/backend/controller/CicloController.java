@@ -41,7 +41,7 @@ public class CicloController extends HttpServlet {
                     requestData.optInt("numero"),
                     requestData.optString("fechaInicio"),
                     requestData.optString("fechaFinal"),
-                    requestData.optInt("estado")
+                    requestData.optString("estado")
             );
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -59,7 +59,7 @@ public class CicloController extends HttpServlet {
                     requestData.getInt("numero"),
                     requestData.getString("fechaInicio"),
                     requestData.getString("fechaFinal"),
-                    requestData.getInt("estado")
+                    requestData.optString("estado")
             );
         } catch (SQLException e) {
             System.err.println(e.getMessage());

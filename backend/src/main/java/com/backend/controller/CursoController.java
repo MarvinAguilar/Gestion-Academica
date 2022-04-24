@@ -40,7 +40,7 @@ public class CursoController extends HttpServlet {
                     requestData.getString("nombre"),
                     requestData.getInt("creditos"),
                     requestData.getInt("horasSemanales"),
-                    requestData.getString("carrera")
+                    requestData.getString("codigoCarrera")
             );
         } catch (SQLException e) {
             System.err.println(e.getMessage());

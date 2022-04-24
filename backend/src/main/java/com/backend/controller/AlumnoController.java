@@ -23,29 +23,29 @@ public class AlumnoController extends HttpServlet {
             case "/alumnos":
                 listarAlumno(response);
                 break;
-            case "/alumno":
-                buscarAlumno(request, response);
-                break;
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        JSONObject requestData = getJsonRequest(request);
-        try {
-            model.insertarAlumno(
-                    requestData.getString("cedula"),
-                    requestData.getString("nombre"),
-                    requestData.getString("telefono"),
-                    requestData.getString("email"),
-                    requestData.getString("fechaNacimiento"),
-                    requestData.getString("carrera")
-            );
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
+        if ("/alumno".equals(request.getServletPath())) {
+            buscarAlumno(request, response);
+        } else {
+            request.setCharacterEncoding("UTF-8");
+            JSONObject requestData = getJsonRequest(request);
+            try {
+                model.insertarAlumno(
+                        requestData.getString("cedula"),
+                        requestData.getString("nombre"),
+                        requestData.getString("telefono"),
+                        requestData.getString("email"),
+                        requestData.getString("fechaNacimiento"),
+                        requestData.getString("codigoCarrera")
+                );
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+            }
         }
-
     }
 
     @Override
@@ -60,7 +60,7 @@ public class AlumnoController extends HttpServlet {
                     requestData.getString("telefono"),
                     requestData.getString("email"),
                     requestData.getString("fechaNacimiento"),
-                    requestData.getString("carrera")
+                    requestData.getString("codigoCarrera")
             );
         } catch (SQLException e) {
             System.err.println(e.getMessage());

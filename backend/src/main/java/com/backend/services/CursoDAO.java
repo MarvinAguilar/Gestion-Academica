@@ -84,13 +84,12 @@ public class CursoDAO {
 
         while (rs.next()) {
             JSONObject curso = new JSONObject();
-            JSONObject cursoCarrera = CursosCarreraDAO.getInstance().buscarCursoCarrera(rs.getString("codigo"));
-            JSONObject carrera = CarreraDAO.getInstance().buscarCarrera(cursoCarrera.getString("carrera"));
             curso.put("codigo", rs.getString("codigo"));
             curso.put("nombre", rs.getString("nombre"));
             curso.put("creditos", rs.getInt("creditos"));
             curso.put("horasSemanales", rs.getInt("horasSemanales"));
-            curso.put("carrera", carrera.getString("nombre"));
+            curso.put("codigoCarrera", rs.getString("codigoCarrera"));
+            curso.put("nombreCarrera", rs.getString("nombreCarrera"));
             cursos.put(curso);
         }
         rs.close();

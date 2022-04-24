@@ -1,23 +1,24 @@
 import { useState } from "react";
 import Modal from "../../../components/Modal/Modal";
 import { useCiclos } from "../../../hooks/useCiclos";
+import useGlobalContext from "../../../hooks/useGlobalContext";
 
 const MantenimientoCiclosPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(false);
   const [query, setQuery] = useState("");
-  const { filterCiclos, insertarCiclo, actualizarCiclo, eliminarCiclo } =
-    useCiclos({
-      query,
-    });
+  const { filterCiclos, insertarCiclo, actualizarCiclo } = useCiclos({
+    query,
+  });
   const date = new Date();
   const [ciclo, setCiclo] = useState({
     anno: date.getFullYear(),
     numero: "",
     fechaInicio: "",
     fechaFinal: "",
-    estado: "",
+    estado: "I",
   });
+  const { formatDate } = useGlobalContext();
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -42,7 +43,7 @@ const MantenimientoCiclosPage = () => {
       numero: "",
       fechaInicio: "",
       fechaFinal: "",
-      estado: "",
+      estado: "I",
     });
     setEditing(false);
     toggleModal();
@@ -52,10 +53,6 @@ const MantenimientoCiclosPage = () => {
     setCiclo(ciclo);
     setEditing(true);
     toggleModal();
-  };
-
-  const handleDelete = (anno, numero) => {
-    eliminarCiclo(anno, numero);
   };
 
   return (
@@ -101,20 +98,15 @@ const MantenimientoCiclosPage = () => {
                 <tr key={index}>
                   <td>{ciclo.anno}</td>
                   <td>{ciclo.numero}</td>
-                  <td>{ciclo.fechaFinal}</td>
-                  <td>{ciclo.estado === 1 ? "Activo" : "Inactivo"}</td>
+                  <td>{formatDate(ciclo.fechaInicio)}</td>
+                  <td>{formatDate(ciclo.fechaFinal)}</td>
+                  <td>{ciclo.estado === "A" ? "Activo" : "Inactivo"}</td>
                   <td className="text-center">
                     <button
-                      className="btn btn-success btn-sm mx-2"
+                      className="btn btn-success btn-sm m-2"
                       onClick={() => handleUpdate(ciclo)}
                     >
                       Editar
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleDelete(ciclo.anno, ciclo.numero)}
-                    >
-                      Eliminar
                     </button>
                   </td>
                 </tr>
@@ -149,22 +141,25 @@ const MantenimientoCiclosPage = () => {
               <label htmlFor="numero" className="form-label">
                 Número
               </label>
-              <input
-                type="text"
+              <select
                 id="numero"
-                className="form-control"
+                className="form-select"
                 name="numero"
                 value={ciclo.numero}
                 onChange={(e) => setCiclo({ ...ciclo, numero: e.target.value })}
                 disabled={editing}
-              />
+              >
+                <option value=""></option>
+                <option value="1">I-Ciclo</option>
+                <option value="2">II-Ciclo</option>
+              </select>
             </div>
             <div className="mb-3">
               <label htmlFor="fechaInicio" className="form-label">
                 Fecha Inicio
               </label>
               <input
-                type="text"
+                type="date"
                 id="fechaInicio"
                 className="form-control"
                 name="fechaInicio"
@@ -179,8 +174,8 @@ const MantenimientoCiclosPage = () => {
                 Fecha Final
               </label>
               <input
-                type="fechaFinal"
-                id="email"
+                type="date"
+                id="fechaFinal"
                 className="form-control"
                 name="fechaFinal"
                 value={ciclo.fechaFinal}
@@ -189,21 +184,25 @@ const MantenimientoCiclosPage = () => {
                 }
               />
             </div>
-            <div className="mb-3">
-              <label htmlFor="estado" className="form-label">
-                Estado
-              </label>
-              <select
-                id="estado"
-                className="form-select"
-                name="estado"
-                value={ciclo.estado}
-                onChange={(e) => setCiclo({ ...ciclo, estado: e.target.value })}
-              >
-                <option value="1">Activo</option>
-                <option value="0">Inactivo</option>
-              </select>
-            </div>
+            {editing && (
+              <div className="mb-3">
+                <label htmlFor="estado" className="form-label">
+                  Estado
+                </label>
+                <select
+                  id="estado"
+                  className="form-select"
+                  name="estado"
+                  value={ciclo.estado}
+                  onChange={(e) =>
+                    setCiclo({ ...ciclo, estado: e.target.value })
+                  }
+                >
+                  <option value="A">Activo</option>
+                  <option value="I">Inactivo</option>
+                </select>
+              </div>
+            )}
           </form>
         </div>
       </Modal>

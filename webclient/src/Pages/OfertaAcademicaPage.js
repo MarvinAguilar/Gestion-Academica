@@ -2,17 +2,30 @@ import { useState } from "react";
 import Modal from "../components/Modal/Modal";
 import { useCarreras } from "../hooks/useCarreras";
 import { useCiclos } from "../hooks/useCiclos";
+import { useCursosCarrera } from "../hooks/useCursosCarrera";
+import { useGrupos } from "../hooks/useGrupos";
 
 const OfertaAcademicaPage = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [editing, setEditing] = useState(false);
   const { carreras } = useCarreras();
   const { ciclos } = useCiclos();
-  const [filter, setFilter] = useState({
-    carrera: "",
-    ciclo: "",
-    curso: "",
+  const [query, setQuery] = useState({
+    codigoCarrera: "",
+    codigoCurso: "",
+    annoCiclo: "",
+    numeroCiclo: "",
   });
-
-  const [showModal, setShowModal] = useState(false);
+  const [grupo, setGrupo] = useState({
+    numero: "",
+    horario: "",
+    cedulaProfesor: "",
+    codigoCurso: "",
+    annoCiclo: "",
+    numeroCiclo: "",
+  });
+  const { cursos } = useCursosCarrera({ query });
+  const { grupos, insertarGrupo, actualizarGrupo } = useGrupos({ query });
 
   const toggleModal = () => {
     setShowModal((e) => !e);
@@ -21,7 +34,43 @@ const OfertaAcademicaPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!editing) insertarGrupo(grupo);
+    else actualizarGrupo(grupo);
+
+    insertarGrupo(grupo);
+
     toggleModal();
+  };
+
+  const handleInsert = () => {
+    setGrupo({ ...grupo, numero: "", horario: "", cedulaProfesor: "" });
+    setEditing(false);
+    toggleModal();
+  };
+
+  const handleUpdate = (grupo) => {
+    setGrupo(grupo);
+    setEditing(true);
+    toggleModal();
+  };
+
+  const handleChangeCiclo = (e) => {
+    const ciclo = e.target.value.split("-");
+    const [annoCiclo, numeroCiclo] = ciclo;
+    setQuery({
+      ...query,
+      annoCiclo: annoCiclo,
+      numeroCiclo: numeroCiclo,
+    });
+    setGrupo({ ...grupo, annoCiclo: annoCiclo, numeroCiclo: numeroCiclo });
+  };
+
+  const handleChangeCurso = (e) => {
+    setQuery({
+      ...query,
+      codigoCurso: e.target.value,
+    });
+    setGrupo({ ...grupo, codigoCurso: e.target.value });
   };
 
   return (
@@ -36,9 +85,9 @@ const OfertaAcademicaPage = () => {
               id="selectCarrera"
               className="form-select"
               name="carrera"
-              value={filter.carrera}
+              value={query.codigoCarrera}
               onChange={(e) =>
-                setFilter({ ...filter, carrera: e.target.value })
+                setQuery({ ...query, codigoCarrera: e.target.value })
               }
             >
               <option value=""></option>
@@ -57,12 +106,15 @@ const OfertaAcademicaPage = () => {
               id="selectCiclo"
               className="form-select"
               name="ciclo"
-              value={filter.ciclo}
-              onChange={(e) => setFilter({ ...filter, ciclo: e.target.value })}
+              value={`${query.annoCiclo}-${query.numeroCiclo}`}
+              onChange={handleChangeCiclo}
             >
               <option value=""></option>
-              {ciclos.map((ciclo, index) => (
-                <option key={index} value={ciclo.anno}>
+              {ciclos.map((ciclo) => (
+                <option
+                  key={`${ciclo.anno}-${ciclo.numero}`}
+                  value={`${ciclo.anno}-${ciclo.numero}`}
+                >
                   {(ciclo.numero === 1 && "I") || (ciclo.numero === 2 && "II")}{" "}
                   - Ciclo {ciclo.anno}
                 </option>
@@ -70,16 +122,24 @@ const OfertaAcademicaPage = () => {
             </select>
           </div>
           <div className="col-sm-12 col-md-6 col-lg-4">
-            <label htmlFor="selectCurso" className="form-label">
+            <label htmlFor="curso" className="form-label">
               Curso
             </label>
             <select
-              id="selectCurso"
+              id="curso"
               className="form-select"
               name="curso"
-              disabled={!filter.carrera || !filter.ciclo}
+              onChange={handleChangeCurso}
+              disabled={
+                !query.codigoCarrera || (!query.annoCiclo && !query.numeroCiclo)
+              }
             >
               <option value=""></option>
+              {cursos.map((curso) => (
+                <option key={curso.codigoCurso} value={curso.codigoCurso}>
+                  {curso.nombreCurso}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -91,7 +151,12 @@ const OfertaAcademicaPage = () => {
             <button
               type="button"
               className="btn btn-primary btn-sm"
-              onClick={toggleModal}
+              onClick={handleInsert}
+              disabled={
+                !query.codigoCarrera ||
+                !query.codigoCurso ||
+                (!query.annoCiclo && !query.numeroCiclo)
+              }
             >
               Agregar Grupo
             </button>
@@ -109,7 +174,29 @@ const OfertaAcademicaPage = () => {
                   <th></th>
                 </tr>
               </thead>
-              <tbody></tbody>
+              <tbody>
+                {grupos.map((grupo) => (
+                  <tr key={grupo.numero}>
+                    <td>{grupo.numero}</td>
+                    <td>{grupo.horario}</td>
+                    <td>{grupo.nombreProfesor}</td>
+                    <td>{grupo.nombreCurso}</td>
+                    <td>
+                      {(grupo.numeroCiclo === 1 && "I") ||
+                        (grupo.numeroCiclo === 2 && "II")}{" "}
+                      - Ciclo {grupo.annoCiclono}
+                    </td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-success btn-sm m-2"
+                        onClick={() => handleUpdate(grupo)}
+                      >
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
@@ -121,7 +208,7 @@ const OfertaAcademicaPage = () => {
         toggleModal={toggleModal}
       >
         <div className="card-body custom-modal__content-body">
-          <form onSubmit={handleSubmit}>
+          <form id="insertForm" onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="numero" className="form-label">
                 Número
@@ -131,6 +218,9 @@ const OfertaAcademicaPage = () => {
                 id="numero"
                 className="form-control"
                 name="numero"
+                value={grupo.numero}
+                onChange={(e) => setGrupo({ ...grupo, numero: e.target.value })}
+                disabled={editing}
               />
             </div>
             <div className="mb-3">
@@ -142,6 +232,10 @@ const OfertaAcademicaPage = () => {
                 id="horario"
                 className="form-control"
                 name="horario"
+                value={grupo.horario}
+                onChange={(e) =>
+                  setGrupo({ ...grupo, horario: e.target.value })
+                }
               />
             </div>
             <div className="mb-3">
@@ -153,25 +247,11 @@ const OfertaAcademicaPage = () => {
                 id="profesor"
                 className="form-control"
                 name="profesor"
+                value={grupo.cedulaProfesor}
+                onChange={(e) =>
+                  setGrupo({ ...grupo, cedulaProfesor: e.target.value })
+                }
               />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="curso" className="form-label">
-                Curso
-              </label>
-              <select id="curso" class="form-select" name="curso">
-                <option value=""></option>
-                <option value="1">Fundamentos de Informática</option>
-              </select>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="ciclo" className="form-label">
-                Ciclo
-              </label>
-              <select id="ciclo" class="form-select" name="ciclo">
-                <option value=""></option>
-                <option value="1">II - Ciclo</option>
-              </select>
             </div>
           </form>
         </div>

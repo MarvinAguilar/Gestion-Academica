@@ -20,8 +20,8 @@ export function useProfesores({ query } = { query: "" }) {
     return query !== ""
       ? profesores.filter(
           (profesor) =>
-            profesor.cedula.toLowerCase().includes(query.toLowerCase()) ||
-            profesor.nombre.toLowerCase().includes(query.toLowerCase())
+            profesor.cedula?.toLowerCase().includes(query.toLowerCase()) ||
+            profesor.nombre?.toLowerCase().includes(query.toLowerCase())
         )
       : profesores;
   };

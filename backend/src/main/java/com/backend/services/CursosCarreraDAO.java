@@ -121,4 +121,29 @@ public class CursosCarreraDAO {
         stmt.close();
         return carrera;
     }
+
+    public JSONArray listarCursoCarreraCiclo(String codigoCarrera, int annoCiclo, int numeroCiclo) throws SQLException {
+        JSONArray cursos = new JSONArray();
+
+        connection.setAutoCommit(false);
+        CallableStatement stmt = connection.prepareCall(CursosCarreraCRUD.LISTARCURSOCARRERACICLO);
+        stmt.registerOutParameter(1, OracleTypes.CURSOR);
+        stmt.setString(2, codigoCarrera);
+        stmt.setInt(3, annoCiclo);
+        stmt.setInt(4, numeroCiclo);
+        stmt.execute();
+
+        ResultSet rs = (ResultSet) stmt.getObject(1);
+        while (rs.next()) {
+            JSONObject curso = new JSONObject();
+            curso.put("codigoCurso", rs.getString("codigoCurso"));
+            curso.put("nombreCurso", rs.getString("nombreCurso"));
+            cursos.put(curso);
+
+        }
+        rs.close();
+        stmt.close();
+
+        return cursos;
+    }
 }

@@ -1,28 +1,29 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
+import useGlobalContext from "./useGlobalContext";
 
 export function useCursos({ query } = { query: "" }) {
-  const [cursos, setCursos] = useState([]);
+  const { cursos, setCursos } = useGlobalContext();
 
-  const handleGetCursos = async () => {
+  const handleGetCursos = useCallback(() => {
     const url = "http://localhost:8081/gestion-academica/cursos";
 
-    await fetch(url)
+    fetch(url)
       .then((data) => data.json())
       .then((res) => setCursos(res))
       .catch((e) => []);
-  };
+  }, [setCursos]);
 
   useEffect(() => {
     handleGetCursos();
-  }, [setCursos]);
+  }, [handleGetCursos]);
 
   const filterCursos = () => {
     return query !== ""
       ? cursos.filter(
           (curso) =>
-            curso.codigo.toLowerCase().includes(query.toLowerCase()) ||
-            curso.nombre.toLowerCase().includes(query.toLowerCase()) ||
-            curso.carrera.toLowerCase().includes(query.toLowerCase())
+            curso.codigo?.toLowerCase().includes(query.toLowerCase()) ||
+            curso.nombre?.toLowerCase().includes(query.toLowerCase()) ||
+            curso.nombreCarrera?.toLowerCase().includes(query.toLowerCase())
         )
       : cursos;
   };

@@ -21,8 +21,8 @@ export function useCarreras({ query } = { query: "" }) {
     return query !== ""
       ? carreras.filter(
           (carrera) =>
-            carrera.codigo.toLowerCase().includes(query.toLowerCase()) ||
-            carrera.nombre.toLowerCase().includes(query.toLowerCase())
+            carrera.codigo?.toLowerCase().includes(query.toLowerCase()) ||
+            carrera.nombre?.toLowerCase().includes(query.toLowerCase())
         )
       : carreras;
   };
