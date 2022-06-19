@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".OfertaAcademicaFragment">
+
+    <LinearLayout
+            android:id="@+id/list_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ddl_carreras"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/carrera"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:elevation="@dimen/cardview_default_elevation"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+            <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="none"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ddl_ciclos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ciclo"
+                android:layout_marginTop="5dp"
+                android:layout_marginHorizontal="10dp"
+                android:elevation="@dimen/cardview_default_elevation"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+            <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="none"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ddl_cursos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/curso"
+                android:layout_marginTop="5dp"
+                android:layout_marginHorizontal="10dp"
+                android:elevation="@dimen/cardview_default_elevation"
+                android:enabled="false"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+            <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="none"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+                android:text="@string/lista_de_grupos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center"
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="50dp"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textAlignment="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/item_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add"
+            android:contentDescription="@string/agregar_elemento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:backgroundTint="@color/custom_blue"
+            android:layout_gravity="bottom|end"
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:enabled="false"/>
+
+</FrameLayout>

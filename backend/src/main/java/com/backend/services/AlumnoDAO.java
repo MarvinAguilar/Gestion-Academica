@@ -52,6 +52,7 @@ public class AlumnoDAO {
         stmt.setString(1, cedula);
         stmt.executeUpdate();
         stmt.close();
+        UsuarioDAO.getInstance().eliminarUsuario(cedula);
     }
 
     public JSONObject buscarAlumno(String cedula) throws SQLException {

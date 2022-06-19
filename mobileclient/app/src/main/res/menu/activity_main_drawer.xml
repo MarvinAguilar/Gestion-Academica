@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+                android:id="@+id/nav_home"
+                android:icon="@drawable/ic_home_material_icon"
+                android:title="@string/menu_inicio"/>
+    </group>
+
+    <item android:title="@string/menu_mantenimiento" android:id="@+id/menu_mantenimiento">
+        <menu>
+            <item
+                    android:id="@+id/nav_carreras"
+                    android:icon="@drawable/ic_school_black_material_icon"
+                    android:title="@string/menu_carreras"/>
+            <item
+                    android:id="@+id/nav_cursos"
+                    android:icon="@drawable/ic_school_black_material_icon"
+                    android:title="@string/menu_cursos"/>
+            <item
+                    android:id="@+id/nav_profesores"
+                    android:icon="@drawable/ic_people_black_material_icon"
+                    android:title="@string/menu_profesores"/>
+            <item
+                    android:id="@+id/nav_alumnos"
+                    android:icon="@drawable/ic_people_black_material_icon"
+                    android:title="@string/menu_alumnos"/>
+            <item
+                    android:id="@+id/nav_ciclos"
+                    android:icon="@drawable/ic_calendar_material_icon"
+                    android:title="@string/menu_ciclos"/>
+            <item
+                    android:id="@+id/nav_seguridad"
+                    android:icon="@drawable/ic_calendar_material_icon"
+                    android:title="@string/menu_seguridad"/>
+        </menu>
+    </item>
+
+    <group android:id="@+id/otherViews" android:checkableBehavior="single">
+        <item
+                android:id="@+id/nav_ofertaAcademica"
+                android:icon="@drawable/ic_school_black_material_icon"
+                android:title="@string/menu_oferta_acad_mica"/>
+        <item
+                android:id="@+id/nav_matricula"
+                android:icon="@drawable/ic_school_black_material_icon"
+                android:title="@string/menu_matr_cula"/>
+        <item
+                android:id="@+id/nav_registroNotas"
+                android:icon="@drawable/ic_school_black_material_icon"
+                android:title="@string/registro_de_notas"/>
+        <item
+                android:id="@+id/nav_historialAcademico"
+                android:icon="@drawable/ic_history_edu_black_material_icon"
+                android:title="@string/menu_historial_acad_mico"/>
+    </group>
+
+    <group android:id="@+id/appOptions" android:checkableBehavior="single">
+        <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_logout_material_icon"
+                android:title="@string/menu_logout"/>
+    </group>
+</menu>
