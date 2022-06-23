@@ -1,6 +1,8 @@
 package com.example.services
 
+import com.example.models.CursosCarrera
 import com.example.models.Grupo
+import com.example.models.GruposCarrera
 import com.example.models.GruposProfesor
 import retrofit2.Call
 import retrofit2.http.Body
@@ -16,6 +18,10 @@ interface Grupos {
     @Headers("Content-Type: application/json")
     @POST("grupos-profesor")
     fun getGruposProfesor(@Body requestBody: String): Call<List<GruposProfesor>>
+
+    @Headers("Content-Type: application/json")
+    @POST("grupos-carrera")
+    fun getGruposCarrera(@Body curso: String): Call<List<GruposCarrera>>
 
     @Headers("Content-Type: application/json")
     @POST("grupo")

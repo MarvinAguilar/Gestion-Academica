@@ -14,6 +14,10 @@ interface EstudiantesGrupos {
     fun getEstudiantesGrupo(@Body requestBody: String): Call<List<EstudiantesGrupo>>
 
     @Headers("Content-Type: application/json")
+    @POST("matricula-estudiante")
+    fun matriculaEstudiante(@Body requestBody: String): Call<Void>
+
+    @Headers("Content-Type: application/json")
     @POST("grupos-estudiante")
     fun getHistorialEstudiante(@Body requestBody: String): Call<List<GruposEstudiante>>
 

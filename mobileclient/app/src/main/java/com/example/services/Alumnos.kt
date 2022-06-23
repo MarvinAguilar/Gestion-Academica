@@ -9,6 +9,10 @@ interface Alumnos {
     fun getAlumnos(): Call<List<Alumno>>
 
     @Headers("Content-Type: application/json")
+    @POST("alumno")
+    fun getAlumno(@Body alumno: String): Call<Alumno>
+
+    @Headers("Content-Type: application/json")
     @POST("alumnos")
     fun insertAlumno(@Body alumno: String): Call<Void>
 

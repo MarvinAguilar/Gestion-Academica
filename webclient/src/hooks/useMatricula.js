@@ -25,7 +25,7 @@ export function useMatricula(
   }, [handleGetGrupos]);
 
   const matricularEstudiante = async (cedulaEstudiante, grupo) => {
-    const url = "http://localhost:8081/gestion-academica/estudiantes-grupo";
+    const url = "http://localhost:8081/gestion-academica/matricula-estudiante";
 
     const { numeroGrupo, codigoCurso, annoCiclo, numeroCiclo } = grupo;
 

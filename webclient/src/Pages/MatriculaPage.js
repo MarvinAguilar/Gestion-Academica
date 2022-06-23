@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useAlumnos } from "../hooks/useAlumnos";
 import { useCiclos } from "../hooks/useCiclos";
 import { useMatricula } from "../hooks/useMatricula";
+import Modal from "../components/Modal/Modal";
 
 const MatriculaPage = () => {
   const { ciclos } = useCiclos();
+  const [showModal, setShowModal] = useState(false);
   const [cedulaEstudiante, setCedulaEstudiante] = useState("");
   const [estudiante, setEstudiante] = useState({
     cedula: "",
@@ -20,6 +22,16 @@ const MatriculaPage = () => {
   });
   const { buscarAlumno } = useAlumnos();
   const { grupos, matricularEstudiante } = useMatricula({ estudiante, query });
+
+  const toggleModal = () => {
+    setShowModal((e) => !e);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    toggleModal();
+  };
 
   const handleBuscarEstudiante = async (e) => {
     e.preventDefault();
@@ -39,6 +51,8 @@ const MatriculaPage = () => {
   const handleMatricula = (grupo) => {
     const cedulaEstudiante = estudiante.cedula;
     matricularEstudiante(cedulaEstudiante, grupo);
+
+    toggleModal();
   };
 
   return (
@@ -139,6 +153,14 @@ const MatriculaPage = () => {
           </div>
         </div>
       </div>
+
+      <Modal title={"Aviso!"} showModal={showModal} toggleModal={toggleModal}>
+        <div className="card-body custom-modal__content-body">
+          <form id="insertForm" onSubmit={handleSubmit}>
+            <div className="mb-3">El estudiante ha sido matriculado!</div>
+          </form>
+        </div>
+      </Modal>
     </>
   );
 };

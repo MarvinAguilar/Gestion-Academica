@@ -12,27 +12,40 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-
-        <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/txt_cedulaEstudiante"
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginHorizontal="10dp"
-                android:elevation="@dimen/cardview_default_elevation"
-                android:hint="@string/c_dula_estudiante"
-                app:startIconDrawable="@drawable/ic_person_material_icon"
-                app:startIconContentDescription="Cédula Estudiante"
-                app:endIconMode="clear_text"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txt_cedulaEstudiante"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:elevation="@dimen/cardview_default_elevation"
+                    android:hint="@string/c_dula_estudiante"
+                    app:startIconDrawable="@drawable/ic_person_material_icon"
+                    app:startIconContentDescription="Cédula Estudiante"
+                    app:endIconMode="clear_text"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="text"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                    android:id="@+id/btn_search"
+                    android:layout_width="50dp"
                     android:layout_height="match_parent"
-                    android:inputType="text"/>
+                    android:layout_marginStart="5dp"
+                    app:icon="@drawable/ic_search_black_material_icon"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
-
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txt_nombreEstudiante"
@@ -45,6 +58,7 @@
                 app:startIconDrawable="@drawable/ic_person_material_icon"
                 app:startIconContentDescription="Nombre Estudiante"
                 app:endIconMode="clear_text"
+                android:enabled="false"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText

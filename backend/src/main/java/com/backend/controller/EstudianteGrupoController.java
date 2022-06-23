@@ -15,7 +15,7 @@ import java.sql.SQLOutput;
 
 import static com.backend.utils.requestToJson.getJsonRequest;
 
-@WebServlet(name = "EstudianteGrupoController", urlPatterns = {"/estudiantes-grupo", "/grupos-estudiante"})
+@WebServlet(name = "EstudianteGrupoController", urlPatterns = {"/estudiantes-grupo", "/grupos-estudiante", "/matricula-estudiante"})
 public class EstudianteGrupoController extends HttpServlet {
 
     private final static EstudianteGrupoModel model = EstudianteGrupoModel.getInstance();
