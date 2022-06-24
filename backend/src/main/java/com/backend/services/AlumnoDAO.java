@@ -71,7 +71,7 @@ public class AlumnoDAO {
             alumno.put("telefono", rs.getString("telefono"));
             alumno.put("email", rs.getString("email"));
             alumno.put("fechaNacimiento", rs.getDate("fechaNacimiento").toString());
-            alumno.put("carrera", rs.getString("carrera"));
+            alumno.put("codigoCarrera", rs.getString("carrera"));
         }
         rs.close();
         stmt.close();

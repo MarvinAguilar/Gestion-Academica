@@ -409,18 +409,52 @@ end;
 
 create or replace function listarGrupoCarrera(
     in_codigoCarrera in grupo.codigoCurso%type,
+    in_cedulaEstudiante in alumno.cedula%type,
     in_annoCiclo in grupo.annoCiclo%type,
     in_numeroCiclo in grupo.numeroCiclo%type
 )
+
 return types.refCursor
 as
     grupoCursor types.refCursor;
+   
 begin
+
     open grupoCursor for
-        select g.numero, g.horario, g.annoCiclo, g.numeroCiclo, c.creditos, c.horasSemanales, p.cedula as cedulaProfesor, p.nombre as nombreProfesor, c.codigo as codigoCurso, c.nombre as nombreCurso
-        from grupo g, profesor p, curso c, cursoscarrera cc
-        where in_codigoCarrera = cc.codigocarrera and g.codigocurso = cc.codigocurso and in_annoCiclo = g.annoCiclo and in_numeroCiclo = g.numeroCiclo and p.cedula = g.cedulaprofesor and c.codigo = g.codigocurso;
+     
+        select g.numero as numeroGrupo, g.horario, cu.creditos, cu.horassemanales, p.cedula as cedulaProfesor, p.nombre as nombreProfesor, cu.codigo as codigoCurso, cu.nombre as nombreCurso, g.annociclo, g.numerociclo,
+        compruebaMatricula(in_cedulaEstudiante, g.numero, cu.codigo) as estadoMatricula
+        from grupo g, curso cu, profesor p, cursoscarrera cc
+        where in_codigoCarrera = cc.codigocarrera and 
+        cc.codigocurso = cu.codigo and
+        cu.codigo = g.codigocurso and
+        in_annoCiclo = g.annociclo and
+        in_numerociclo = g.numerociclo and
+        g.cedulaprofesor = p.cedula;
     return grupoCursor;
+end;
+/
+
+create or replace function compruebaMatricula(
+    in_cedulaEstudiante in alumno.cedula%type,
+    in_codigoGrupo in grupo.numero%type,
+    in_codigoCurso in curso.codigo%type
+) 
+
+return varchar
+is
+    estadoMatricula varchar(30);
+    cuenta number;
+begin
+    select count(*) into cuenta from estudiantesgrupo where in_cedulaEstudiante = cedulaestudiante and in_codigoGrupo = numerogrupo and in_codigoCurso = codigocurso;
+    
+    if cuenta = 1 then
+        estadoMatricula := 'Matriculado';
+    else
+        estadoMatricula := 'No matriculado';
+    end if;
+    
+    return estadoMatricula;
 end;
 /
 

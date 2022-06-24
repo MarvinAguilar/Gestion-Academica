@@ -21,7 +21,7 @@ interface Grupos {
 
     @Headers("Content-Type: application/json")
     @POST("grupos-carrera")
-    fun getGruposCarrera(@Body curso: String): Call<List<GruposCarrera>>
+    fun getGruposCarrera(@Body requestBody: String): Call<List<GruposCarrera>>
 
     @Headers("Content-Type: application/json")
     @POST("grupo")

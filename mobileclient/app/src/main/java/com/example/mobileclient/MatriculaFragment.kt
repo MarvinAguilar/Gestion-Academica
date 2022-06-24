@@ -2,7 +2,6 @@ package com.example.mobileclient
 
 import android.graphics.Canvas
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +9,12 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.models.Alumno
 import com.example.models.Ciclo
-import com.example.models.Grupo
 import com.example.models.GruposCarrera
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.fragment_matricula.view.*
@@ -27,7 +26,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MatriculaFragment : Fragment() {
 
@@ -100,12 +98,11 @@ class MatriculaFragment : Fragment() {
             if (estudiante.cedula != "" && ddlCiclos.text.toString() != "") {
                 val requestBody = JSONObject()
                 requestBody.put("codigoCarrera", estudiante.codigoCarrera)
+                requestBody.put("cedulaEstudiante", estudiante.cedula)
                 requestBody.put("annoCiclo", itemCiclo.anno)
                 requestBody.put("numeroCiclo", itemCiclo.numero)
 
                 getListOfItems(requestBody)
-            } else {
-                showToast("Not Data Found")
             }
         }
 
@@ -142,7 +139,11 @@ class MatriculaFragment : Fragment() {
 
                 lista.adapter?.notifyItemRemoved(position)
 
-                handleMatricula(grupo) //%%%%%%%
+                if (grupo.estadoMatricula == "Matriculado") {
+                    handleDesmatricula(grupo)
+                } else {
+                    handleMatricula(grupo)
+                }
 
                 gruposList.add(position, grupo)
 
@@ -217,7 +218,8 @@ class MatriculaFragment : Fragment() {
     private fun handleMatricula(grupo: GruposCarrera) {
         CoroutineScope(Dispatchers.IO).launch {
             val requestBody = JSONObject()
-            requestBody.put("cedulaEstudiante", estudiante.codigoCarrera)
+            requestBody.put("cedulaEstudiante", estudiante.cedula)
+            requestBody.put("codigoCarrera", estudiante.codigoCarrera)
             requestBody.put("numeroGrupo", grupo.numeroGrupo)
             requestBody.put("codigoCurso", grupo.codigoCurso)
             requestBody.put("annoCiclo", grupo.annoCiclo)
@@ -231,8 +233,36 @@ class MatriculaFragment : Fragment() {
             activity?.runOnUiThread {
                 if (!call.isSuccessful)
                     showToast("No se pudo realizar la matrícula!")
-                else
+                else {
+                    getListOfItems(requestBody)
                     showToast("El estudiante ha sido matriculado correctamente")
+                }
+            }
+        }
+    }
+
+    private fun handleDesmatricula(grupo: GruposCarrera) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val requestBody = JSONObject()
+            requestBody.put("cedulaEstudiante", estudiante.cedula)
+            requestBody.put("codigoCarrera", estudiante.codigoCarrera)
+            requestBody.put("numeroGrupo", grupo.numeroGrupo)
+            requestBody.put("codigoCurso", grupo.codigoCurso)
+            requestBody.put("annoCiclo", grupo.annoCiclo)
+            requestBody.put("numeroCiclo", grupo.numeroCiclo)
+
+            val call =
+                getRetrofit().create(com.example.services.EstudiantesGrupos::class.java)
+                    .desmatriculaEstudiante(requestBody.toString())
+                    .execute()
+
+            activity?.runOnUiThread {
+                if (!call.isSuccessful)
+                    showToast("No se pudo desmatricular!")
+                else {
+                    getListOfItems(requestBody)
+                    showToast("El estudiante ha sido desmatriculado")
+                }
             }
         }
     }

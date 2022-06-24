@@ -39,11 +39,11 @@ class AdaptadorGruposCarrera(items: ArrayList<GruposCarrera>) : RecyclerView.Ada
         holder.itemView.findViewById<ImageView>(R.id.iv_Image).setImageResource(R.drawable.study_picture)
 
         holder.itemView.findViewById<TextView>(R.id.tv_field1)?.text = "Curso: ${item?.nombreCurso}"
-        holder.itemView.findViewById<TextView>(R.id.tv_field2)?.text = "Grupo: ${item?.numeroGrupo}"
+        holder.itemView.findViewById<TextView>(R.id.tv_field2)?.text = "Grupo: ${item?.numeroGrupo} - Horas Semanales: ${item?.horasSemanales}"
         holder.itemView.findViewById<TextView>(R.id.tv_field3)?.text = "Profesor: ${item?.nombreProfesor}"
-        holder.itemView.findViewById<TextView>(R.id.tv_field4)?.text = "Curso: ${item?.creditos}"
-        holder.itemView.findViewById<TextView>(R.id.tv_field5)?.text = "Grupo: ${item?.horario}"
-        holder.itemView.findViewById<TextView>(R.id.tv_field6)?.text = "Nota: ${item?.horasSemanales}"
+        holder.itemView.findViewById<TextView>(R.id.tv_field4)?.text = "Créditos: ${item?.creditos}"
+        holder.itemView.findViewById<TextView>(R.id.tv_field5)?.text = "Horario: ${item?.horario}"
+        holder.itemView.findViewById<TextView>(R.id.tv_field6)?.text = "Estado de Matrícula: ${item?.estadoMatricula}"
 
         holder.itemView.setOnClickListener {
             Log.d("Selected:", itemsList?.get(position)?.numeroGrupo.toString())

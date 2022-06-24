@@ -3,10 +3,7 @@ package com.example.services
 import com.example.models.EstudiantesGrupo
 import com.example.models.GruposEstudiante
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
-import retrofit2.http.PUT
+import retrofit2.http.*
 
 interface EstudiantesGrupos {
     @Headers("Content-Type: application/json")
@@ -16,6 +13,10 @@ interface EstudiantesGrupos {
     @Headers("Content-Type: application/json")
     @POST("matricula-estudiante")
     fun matriculaEstudiante(@Body requestBody: String): Call<Void>
+
+    @Headers("Content-Type: application/json")
+    @HTTP(method = "DELETE", path = "matricula-estudiante", hasBody = true)
+    fun desmatriculaEstudiante(@Body requestBody: String): Call<Void>
 
     @Headers("Content-Type: application/json")
     @POST("grupos-estudiante")

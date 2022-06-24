@@ -13,5 +13,6 @@ data class GruposCarrera(
     @SerializedName("codigoCurso") val codigoCurso: String,
     @SerializedName("nombreCurso") val nombreCurso: String,
     @SerializedName("annoCiclo") val annoCiclo: Int,
-    @SerializedName("numeroCiclo") val numeroCiclo: Int
+    @SerializedName("numeroCiclo") val numeroCiclo: Int,
+    @SerializedName("estadoMatricula") val estadoMatricula: String
 ) : Serializable

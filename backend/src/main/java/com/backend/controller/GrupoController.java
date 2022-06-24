@@ -118,7 +118,7 @@ public class GrupoController extends HttpServlet {
         JSONObject requestData = getJsonRequest(request);
 
         try {
-            grupos = model.listarGrupoCarrera(requestData.optString("codigoCarrera"), requestData.optInt("annoCiclo"), requestData.optInt("numeroCiclo"));
+            grupos = model.listarGrupoCarrera(requestData.optString("codigoCarrera"), requestData.optString("cedulaEstudiante"), requestData.optInt("annoCiclo"), requestData.optInt("numeroCiclo"));
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         }

@@ -113,15 +113,16 @@ public class GrupoDAO {
         return grupos;
     }
 
-    public JSONArray listarGrupoCarrera(String codigoCarrera, int annoCiclo, int numeroCiclo) throws SQLException {
+    public JSONArray listarGrupoCarrera(String codigoCarrera, String cedulaEstudiante, int annoCiclo, int numeroCiclo) throws SQLException {
         JSONArray grupos = new JSONArray();
 
         connection.setAutoCommit(false);
         CallableStatement stmt = connection.prepareCall(GrupoCRUD.LISTARGRUPOCARRERA);
         stmt.registerOutParameter(1, OracleTypes.CURSOR);
         stmt.setString(2, codigoCarrera);
-        stmt.setInt(3, annoCiclo);
-        stmt.setInt(4, numeroCiclo);
+        stmt.setString(3, cedulaEstudiante);
+        stmt.setInt(4, annoCiclo);
+        stmt.setInt(5, numeroCiclo);
         stmt.execute();
 
         ResultSet rs = (ResultSet) stmt.getObject(1);
@@ -137,6 +138,7 @@ public class GrupoDAO {
             grupo.put("nombreCurso", rs.getString("nombreCurso"));
             grupo.put("annoCiclo", rs.getInt("annoCiclo"));
             grupo.put("numeroCiclo", rs.getInt("numeroCiclo"));
+            grupo.put("estadoMatricula", rs.getString("estadoMatricula"));
             grupos.put(grupo);
         }
         rs.close();
