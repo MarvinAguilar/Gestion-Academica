@@ -13,4 +13,9 @@
     <!-- Custom colors -->
     <color name="dark">#212529</color>
     <color name="custom_blue">#349BDC</color>
+    <color name="blue_sapphire">#22577A</color>
+    <color name="cadet_blue">#38A3A5</color>
+    <color name="ocean_green">#57CC99</color>
+    <color name="light_green">#80ED99</color>
+    <color name="tea_green">#C7F9CC</color>
 </resources>
